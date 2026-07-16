@@ -1,0 +1,2 @@
+# NovaTemplate
+Magi Nova
