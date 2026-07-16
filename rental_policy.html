@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NOVA Rental Policy</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky:#7ab9ec;
+    --navy:#1F4E79;
+    --paper:#F8F9FA;
+    --grad-a-start:#005AA7;
+    --grad-a-end:#FFFDE4;
+    --grad-b-start:#1c92d2;
+    --grad-b-end:#f2fcfe;
+  }
+  *{font-family:'Manrope',sans-serif;}
+  .font-display{font-family:'Sora',sans-serif;}
+  body{background:var(--paper);}
+  .grad-a{background:linear-gradient(135deg,var(--grad-a-start) 0%,var(--grad-a-end) 100%);}
+  .grad-b{background:linear-gradient(135deg,var(--grad-b-start) 0%,var(--grad-b-end) 100%);}
+  .sidebar-grad{background:linear-gradient(200deg,var(--navy) 0%,#123452 100%);}
+  .scrollbar-thin::-webkit-scrollbar{width:6px;height:6px;}
+  .scrollbar-thin::-webkit-scrollbar-thumb{background:#c9dcee;border-radius:10px;}
+  .card{background:#fff;border:1px solid #E7ECF1;border-radius:18px;}
+  .nav-link{transition:all .18s ease;}
+  .nav-link:hover{background:rgba(122,185,236,0.14);}
+  .nav-link.active{background:rgba(122,185,236,0.22);border-left:3px solid var(--sky);}
+  .dropdown-chevron.rotated{transform:rotate(180deg);}
+  .glow{box-shadow:0 8px 24px -8px rgba(31,78,121,0.25);}
+  ::selection{background:var(--sky);color:#fff;}
+  .toast{transition:transform .3s ease, opacity .3s ease;}
+  .feature-card{border:1px solid #E7ECF1;border-radius:24px;background:#fff;}
+  @media (max-width: 1024px){
+    #sidebar{transform:translateX(-100%);}
+    #sidebar.open{transform:translateX(0);}
+  }
+</style>
+</head>
+<body class="text-[#1F2937]">
+<div class="flex min-h-screen">
+  <aside id="sidebar" class="sidebar-grad fixed lg:static z-40 w-72 min-h-screen text-white flex flex-col transition-transform duration-300 ease-out">
+    <div class="flex items-center gap-3 px-6 py-6 border-b border-white/10">
+      <div class="w-10 h-10 rounded-xl grad-b flex items-center justify-center font-display font-bold text-[var(--navy)] text-lg shadow-lg">N</div>
+      <div>
+        <p class="font-display font-bold text-lg leading-none">NOVA</p>
+        <p class="text-xs text-white/50 mt-1">EV Transport</p>
+      </div>
+      <button onclick="toggleSidebar()" class="ml-auto lg:hidden text-white/70 hover:text-white">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto scrollbar-thin">
+      <p class="text-[11px] uppercase tracking-wider text-white/40 px-3 mb-2 font-semibold">Overview</p>
+      <a href="#" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+        Home
+      </a>
+      <a href="analytics.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-4"/></svg>
+        Analytics
+      </a>
+      <a href="notification.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"/></svg>
+        Notification
+      </a>
+      <p class="text-[11px] uppercase tracking-wider text-white/40 px-3 mb-2 mt-6 font-semibold">General</p>
+      <a href="route.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="5" r="2.5"/><path d="M8.3 18 18 8.3M8 19h6a4 4 0 0 0 4-4V9"/></svg>
+        Route
+      </a>
+      <a href="#" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Drivers
+      </a>
+      <a href="#" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7h-9M14 17H5M17 20l3-3-3-3M7 4L4 7l3 3"/></svg>
+        Vehicles
+      </a>
+      <p class="text-[11px] uppercase tracking-wider text-white/40 px-3 mb-2 mt-6 font-semibold">Manage</p>
+      <div>
+        <button type="button" onclick="toggleDropdown('navDropdown2', this)" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 8h18"/><path d="M8 12h8"/><path d="M8 16h8"/></svg>
+          Website
+          <svg class="dropdown-chevron ml-auto transition-transform duration-200" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div id="navDropdown2" class="hidden pl-9 pr-1 mt-1 space-y-1">
+          <a href="#" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Home Page</a>
+          <a href="#" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Blog Post Page</a>
+          <a href="#" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Contact Page</a>
+        </div>
+      </div>
+      <a href="#" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v9H4v-9M2 7l10-5 10 5-10 5z"/><path d="M12 22V12"/></svg>
+        Promotion
+      </a>
+      <div>
+        <button type="button" onclick="toggleDropdown('navDropdown3', this)" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Support
+          <svg class="dropdown-chevron ml-auto transition-transform duration-200 rotated" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div id="navDropdown3" class="pl-9 pr-1 mt-1 space-y-1">
+          <a href="faq.html" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>FAQ</a>
+          <a href="rental_policy.html" class="nav-link active flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Rental policy</a>
+          <a href="#" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Required documents</a>
+          <a href="terms_conditions.html" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Terms & conditions</a>
+          <a href="#" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Contact support</a>
+        </div>
+      </div>
+      <p class="text-[11px] uppercase tracking-wider text-white/40 px-3 mb-2 mt-6 font-semibold">System</p>
+      <a href="#" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 .51 1z"/></svg>
+        Settings
+      </a>
+    </nav>
+    <div class="p-4 border-t border-white/10">
+      <div class="flex items-center gap-3 p-3 rounded-xl bg-white/5">
+        <img src="https://i.pravatar.cc/64?img=32" class="w-9 h-9 rounded-full ring-2 ring-[var(--sky)]/50" />
+        <div class="min-w-0">
+          <p class="text-sm font-semibold truncate">Alex Morgan</p>
+          <p class="text-xs text-white/50 truncate">Super Admin</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div id="overlay" onclick="toggleSidebar()" class="hidden fixed inset-0 bg-black/30 z-30 lg:hidden"></div>
+  <div class="flex-1 min-w-0 flex flex-col">
+    <header class="sticky top-0 z-20 bg-white/80 backdrop-blur border-b border-[#E7ECF1] px-4 sm:px-8 py-4 flex items-center gap-4">
+      <button onclick="toggleSidebar()" class="lg:hidden text-[var(--navy)]">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+      <div>
+        <h1 class="font-display font-bold text-xl sm:text-2xl text-[var(--navy)]">Rental Policy</h1>
+        <p class="text-sm text-slate-500 hidden sm:block">Full rental policy for NOVA EV bookings and usage.</p>
+      </div>
+      <div class="ml-auto flex items-center gap-3">
+        <button class="relative w-10 h-10 rounded-full bg-[#F1F4F8] flex items-center justify-center hover:bg-[#e7edf5] transition">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="absolute top-1.5 right-2 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white"></span>
+        </button>
+        <img src="https://i.pravatar.cc/64?img=32" class="w-9 h-9 rounded-full ring-2 ring-[var(--sky)]/50" />
+        <div class="relative">
+          <button onclick="toggleDropdown('userDropdown', this)" class="flex items-center gap-2 text-sm font-medium text-[var(--navy)] hover:text-[var(--sky)] transition">
+            <span>Ko Thet</span>
+            <svg class="dropdown-chevron transition-transform duration-200" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-2 z-10">
+            <a href="#" class="block px-4 py-2 text-sm text-slate-600 hover:bg-[#F1F4F8]">Profile</a>
+            <a href="#" class="block px-4 py-2 text-sm text-slate-600 hover:bg-[#F1F4F8]">Settings</a>
+            <a href="#" class="block px-4 py-2 text-sm text-slate-600 hover:bg-[#F1F4F8]">Billing</a>
+            <div class="border-t border-slate-100 my-1"></div>
+            <a href="#" class="block px-4 py-2 text-sm text-slate-600 hover:bg-[#F1F4F8]">Sign out</a>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main class="flex-1 px-4 sm:px-8 py-6 max-w-[1400px] w-full mx-auto">
+      <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 mb-6">
+        <div class="card p-5">
+          <p class="text-xs text-slate-400 font-medium">Effective date</p>
+          <p class="text-2xl font-display font-bold text-[var(--navy)] mt-2">July 2026</p>
+        </div>
+        <div class="card p-5">
+          <p class="text-xs text-slate-400 font-medium">Booking window</p>
+          <p class="text-2xl font-display font-bold text-emerald-600 mt-2">24 hrs</p>
+        </div>
+        <div class="card p-5">
+          <p class="text-xs text-slate-400 font-medium">Support</p>
+          <p class="text-2xl font-display font-bold text-amber-600 mt-2">24/7</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div class="feature-card p-6">
+          <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Eligibility</p>
+          <h2 class="mt-3 text-xl font-semibold text-[var(--navy)]">Who can rent</h2>
+          <p class="mt-3 text-sm leading-6 text-slate-600">Renters must be at least 21 years old, possess a valid driver license, and pass identity verification before booking.</p>
+        </div>
+        <div class="feature-card p-6">
+          <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Rates</p>
+          <h2 class="mt-3 text-xl font-semibold text-[var(--navy)]">Transparent pricing</h2>
+          <p class="mt-3 text-sm leading-6 text-slate-600">Daily, hourly, and distance-based charges are shown before confirmation. Taxes and insurance fees are calculated during checkout.</p>
+        </div>
+        <div class="feature-card p-6">
+          <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Cancellation</p>
+          <h2 class="mt-3 text-xl font-semibold text-[var(--navy)]">Flexible policy</h2>
+          <p class="mt-3 text-sm leading-6 text-slate-600">Cancel up to 24 hours before pickup for a full refund. Late cancellations may incur a fee of up to 50% of the booking value.</p>
+        </div>
+      </div>
+      <section class="card p-6 mb-6">
+        <div class="flex items-start gap-4">
+          <div class="w-11 h-11 rounded-2xl grad-a flex items-center justify-center text-white text-lg">1</div>
+          <div>
+            <h2 class="text-xl font-semibold text-[var(--navy)]">Booking and Reservation Rules</h2>
+            <p class="mt-3 text-slate-600 leading-7">All bookings must be completed through the NOVA dashboard. The vehicle must be collected from the selected location during the scheduled pickup window. If you arrive late, please notify support immediately to avoid charges.</p>
+          </div>
+        </div>
+      </section>
+      <section class="card p-6 mb-6">
+        <div class="flex items-start gap-4">
+          <div class="w-11 h-11 rounded-2xl grad-a flex items-center justify-center text-white text-lg">2</div>
+          <div>
+            <h2 class="text-xl font-semibold text-[var(--navy)]">Eligibility and Required Documents</h2>
+            <p class="mt-3 text-slate-600 leading-7">Drivers must present a valid government-issued license, proof of address, and the credit card used for booking. International renters may be required to supply additional identification.</p>
+          </div>
+        </div>
+      </section>
+      <section class="card p-6 mb-6">
+        <div class="flex items-start gap-4">
+          <div class="w-11 h-11 rounded-2xl grad-a flex items-center justify-center text-white text-lg">3</div>
+          <div>
+            <h2 class="text-xl font-semibold text-[var(--navy)]">Vehicle Condition and Damage</h2>
+            <p class="mt-3 text-slate-600 leading-7">Inspect your vehicle before departure. Report any pre-existing damage immediately. You are responsible for damage or loss during your rental period, including resurfacing fees and cleaning charges.</p>
+          </div>
+        </div>
+      </section>
+      <section class="card p-6 mb-6">
+        <div class="flex items-start gap-4">
+          <div class="w-11 h-11 rounded-2xl grad-a flex items-center justify-center text-white text-lg">4</div>
+          <div>
+            <h2 class="text-xl font-semibold text-[var(--navy)]">Insurance and Liability</h2>
+            <p class="mt-3 text-slate-600 leading-7">Insurance coverage is included with every booking. Liability limits are outlined in your rental agreement. Optional coverage upgrades are available during checkout.</p>
+          </div>
+        </div>
+      </section>
+      <section class="card p-6 mb-6">
+        <div class="flex items-start gap-4">
+          <div class="w-11 h-11 rounded-2xl grad-a flex items-center justify-center text-white text-lg">5</div>
+          <div>
+            <h2 class="text-xl font-semibold text-[var(--navy)]">Payment and Fees</h2>
+            <p class="mt-3 text-slate-600 leading-7">Payment is captured at booking time. Additional charges may apply for mileage overages, refueling, tolls, or failure to return the vehicle on time.</p>
+          </div>
+        </div>
+      </section>
+      <section class="card p-6 mb-6">
+        <div class="flex items-start gap-4">
+          <div class="w-11 h-11 rounded-2xl grad-a flex items-center justify-center text-white text-lg">6</div>
+          <div>
+            <h2 class="text-xl font-semibold text-[var(--navy)]">Contact and Support</h2>
+            <p class="mt-3 text-slate-600 leading-7">For questions or emergency assistance, contact the NOVA support team any time. Use the in-app chat or email support@nova-ev.com.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+<div id="toast" class="toast fixed bottom-6 right-6 translate-y-24 opacity-0 bg-[var(--navy)] text-white text-sm font-medium px-5 py-3 rounded-xl shadow-xl z-50 flex items-center gap-2"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--sky)" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span id="toastMsg">Done</span></div>
+<script>
+  function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('hidden'); }
+  function toggleDropdown(id, btn){ const panel=document.getElementById(id); const chevron=btn.querySelector('.dropdown-chevron'); panel.classList.toggle('hidden'); chevron.classList.toggle('rotated'); }
+  let toastTimer;
+  function showToast(msg){ const toast=document.getElementById('toast'); document.getElementById('toastMsg').textContent=msg||'Done'; toast.classList.remove('translate-y-24','opacity-0'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>toast.classList.add('translate-y-24','opacity-0'),2400); }
+</script>
+</body>
+</html>

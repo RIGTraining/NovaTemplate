@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NOVA</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky:#7ab9ec;
+    --navy:#1F4E79;
+    --paper:#F8F9FA;
+    --grad-a-start:#005AA7;
+    --grad-a-end:#FFFDE4;
+    --grad-b-start:#1c92d2;
+    --grad-b-end:#f2fcfe;
+  }
+  *{font-family:'Manrope',sans-serif;}
+  .font-display{font-family:'Sora',sans-serif;}
+  body{background:var(--paper);}
+  .grad-a{background:linear-gradient(135deg,var(--grad-a-start) 0%,var(--grad-a-end) 100%);}
+  .grad-b{background:linear-gradient(135deg,var(--grad-b-start) 0%,var(--grad-b-end) 100%);}
+  .sidebar-grad{background:linear-gradient(200deg,var(--navy) 0%,#123452 100%);}
+  .scrollbar-thin::-webkit-scrollbar{width:6px;height:6px;}
+  .scrollbar-thin::-webkit-scrollbar-thumb{background:#c9dcee;border-radius:10px;}
+  .card{background:#fff;border:1px solid #E7ECF1;border-radius:18px;}
+  .nav-link{transition:all .18s ease;}
+  .nav-link:hover{background:rgba(122,185,236,0.14);}
+  .nav-link.active{background:rgba(122,185,236,0.22);border-left:3px solid var(--sky);}
+  .dropdown-chevron.rotated{transform:rotate(180deg);}
+  .glow{box-shadow:0 8px 24px -8px rgba(31,78,121,0.25);}
+  ::selection{background:var(--sky);color:#fff;}
+  .toast{transition:transform .3s ease, opacity .3s ease;}
+  th.sortable{cursor:pointer;user-select:none;}
+  th.sortable:hover{color:var(--navy);}
+  .sort-icon{opacity:.3;transition:opacity .15s, transform .15s;}
+  th.sort-asc .sort-icon{opacity:1;transform:rotate(0deg);}
+  th.sort-desc .sort-icon{opacity:1;transform:rotate(180deg);}
+  tr.row-selected{background:rgba(122,185,236,0.10);}
+  .checkbox{accent-color:var(--navy);}
+  #bulkBar{transition:transform .25s ease, opacity .25s ease;}
+  .input-field{transition:all .18s ease;}
+  .input-field:focus{border-color:var(--sky);box-shadow:0 0 0 4px rgba(122,185,236,0.25);}
+  @media (max-width: 1024px){
+    #sidebar{transform:translateX(-100%);}
+    #sidebar.open{transform:translateX(0);}
+  }
+</style>
+</head>
+<body class="text-[#1F2937]">
+
+<div class="flex min-h-screen">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar" class="sidebar-grad fixed lg:static z-40 w-72 min-h-screen text-white flex flex-col transition-transform duration-300 ease-out">
+    <div class="flex items-center gap-3 px-6 py-6 border-b border-white/10">
+      <div class="w-10 h-10 rounded-xl grad-b flex items-center justify-center font-display font-bold text-[var(--navy)] text-lg shadow-lg">N</div>
+      <div>
+        <p class="font-display font-bold text-lg leading-none">NOVA</p>
+        <p class="text-xs text-white/50 mt-1">EV Transport</p>
+      </div>
+      <button onclick="toggleSidebar()" class="ml-auto lg:hidden text-white/70 hover:text-white">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto scrollbar-thin">
+      <p class="text-[11px] uppercase tracking-wider text-white/40 px-3 mb-2 font-semibold">Overview</p>
+      <a href="#" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+        Home
+      </a>
+      
+      <a href="analytics.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-4"/></svg>
+        Analytics
+      </a>
+      <a href="notification.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"/></svg>
+        Notification
+        <span class="ml-auto text-[10px] bg-[var(--sky)] text-[var(--navy)] font-bold px-1.5 py-0.5 rounded-full">12</span>
+      </a>
+
+      <p class="text-[11px] uppercase tracking-wider text-white/40 px-3 mb-2 mt-6 font-semibold">General</p>
+     
+      <a href="route.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="5" r="2.5"/><path d="M8.3 18 18 8.3M8 19h6a4 4 0 0 0 4-4V9"/></svg>
+        Route
+      </a>
+
+      <a href="#" class="nav-link active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Drivers
+      </a>
+      
+
+      <a href="#" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-9M14 17H5M17 20l3-3-3-3M7 4L4 7l3 3"/></svg>
+        Vehicles
+      </a>
+
+      
+
+      <p class="text-[11px] uppercase tracking-wider text-white/40 px-3 mb-2 mt-6 font-semibold">Manage</p>
+      <!-- dropdown for web page config -->
+       <div>
+        <button type="button" onclick="toggleDropdown('navDropdown2', this)" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 8h18"/><path d="M8 12h8"/><path d="M8 16h8"/></svg>
+          Website
+          <svg class="dropdown-chevron ml-auto transition-transform duration-200" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div id="navDropdown2" class="hidden pl-9 pr-1 mt-1 space-y-1">
+          <a href="#" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70">
+            <span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>
+            Home Page
+          </a>
+          <a href="#" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70">
+            <span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>
+            Blog Post Page
+          </a>
+          <a href="#" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70">
+            <span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>
+            Contact Page
+          </a>
+       </div>
+
+        <a href="#" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v9H4v-9M2 7l10-5 10 5-10 5z"/><path d="M12 22V12"/></svg>
+        Promotion
+      </a>
+      
+      <div>
+        <button type="button" onclick="toggleDropdown('navDropdown1', this)" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          Payment
+          <svg class="dropdown-chevron ml-auto transition-transform duration-200" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div id="navDropdown1" class="hidden pl-9 pr-1 mt-1 space-y-1">
+          <a href="#" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70">
+            <span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>
+            Web Config
+          </a>
+          <a href="#" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70">
+            <span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>
+            Blog
+          </a>
+          <a href="#" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70">
+            <span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>
+            Transactions
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <!-- dropdown for customer support : faq, policy.. -->
+         <button type="button" onclick="toggleDropdown('navDropdown3', this)" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Support
+          <svg class="dropdown-chevron ml-auto transition-transform duration-200" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div id="navDropdown3" class="hidden pl-9 pr-1 mt-1 space-y-1">
+          <a href="#" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70">
+            <span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>
+            FAQ
+          </a>
+          <a href="#" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70">
+            <span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>
+            Rental policy 
+          </a>
+          <a href="#" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70">
+            <span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>
+            Required documents 
+          </a>
+          <a href="#" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70">
+            <span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>
+            Terms & conditions  
+          </a>
+          <a href="#" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70">
+            <span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>
+            Contact support  
+          </a>
+
+      </div>
+
+      <p class="text-[11px] uppercase tracking-wider text-white/40 px-3 mb-2 mt-6 font-semibold">System</p>
+      <a href="#" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 
+0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 .51 1z"/></svg>
+        Settings
+      </a>
+
+    <div class="p-4 border-t border-white/10">
+      <div class="flex items-center gap-3 p-3 rounded-xl bg-white/5">
+        <img src="https://i.pravatar.cc/64?img=32" class="w-9 h-9 rounded-full ring-2 ring-[var(--sky)]/50" />
+        <div class="min-w-0">
+          <p class="text-sm font-semibold truncate">Alex Morgan</p>
+          <p class="text-xs text-white/50 truncate">Super Admin</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div id="overlay" onclick="toggleSidebar()" class="hidden fixed inset-0 bg-black/30 z-30 lg:hidden"></div>
+
+  <!-- MAIN -->
+  <div class="flex-1 min-w-0 flex flex-col">
+
+    <!-- TOPBAR -->
+    <header class="sticky top-0 z-20 bg-white/80 backdrop-blur border-b border-[#E7ECF1] px-4 sm:px-8 py-4 flex items-center gap-4">
+      <button onclick="toggleSidebar()" class="lg:hidden text-[var(--navy)]">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+      <div>
+        <h1 class="font-display font-bold text-xl sm:text-2xl text-[var(--navy)]">Customers</h1>
+        <p class="text-sm text-slate-500 hidden sm:block">Manage every account in your workspace.</p>
+      </div>
+      <div class="ml-auto flex items-center gap-3">
+        <button class="relative w-10 h-10 rounded-full bg-[#F1F4F8] flex items-center justify-center hover:bg-[#e7edf5] transition">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="absolute top-1.5 right-2 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white"></span>
+        </button>
+        <img src="https://i.pravatar.cc/64?img=32" class="w-9 h-9 rounded-full ring-2 ring-[var(--sky)]/50" />
+        <!-- dropdown for user menu -->
+        <div class="relative">
+          <button onclick="toggleDropdown('userDropdown', this)" class="flex items-center gap-2 text-sm font-medium text-[var(--navy)] hover:text-[var(--sky)] transition">
+            <span>Ko Thet</span>
+            <svg class="dropdown-chevron transition-transform duration-200" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-2 z-10">
+            <a href="#" class="block px-4 py-2 text-sm text-slate-600 hover:bg-[#F1F4F8]">Profile</a>
+            <a href="#" class="block px-4 py-2 text-sm text-slate-600 hover:bg-[#F1F4F8]">Settings</a>
+            <a href="#" class="block px-4 py-2 text-sm text-slate-600 hover:bg-[#F1F4F8]">Billing</a>
+            <div class="border-t border-slate-100 my-1"></div>
+            <a href="#" class="block px-4 py-2 text-sm text-slate-600 hover:bg-[#F1F4F8]">Sign out</a>
+          </div>
+      </div>
+
+    </header>
+
+    <main class="flex-1 px-4 sm:px-8 py-6 max-w-[1400px] w-full mx-auto">
+
+      <!-- Summary chips -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+        <div class="card p-4">
+          <p class="text-xs text-slate-400 font-medium">Total Customers</p>
+          <p class="text-xl font-display font-bold text-[var(--navy)] mt-1" id="statTotal">—</p>
+        </div>
+        <div class="card p-4">
+          <p class="text-xs text-slate-400 font-medium">Active</p>
+          <p class="text-xl font-display font-bold text-emerald-600 mt-1" id="statActive">—</p>
+        </div>
+        <div class="card p-4">
+          <p class="text-xs text-slate-400 font-medium">Pending</p>
+          <p class="text-xl font-display font-bold text-amber-600 mt-1" id="statPending">—</p>
+        </div>
+        <div class="card p-4">
+          <p class="text-xs text-slate-400 font-medium">Suspended</p>
+          <p class="text-xl font-display font-bold text-rose-600 mt-1" id="statSuspended">—</p>
+        </div>
+      </div>
+
+      <!-- Table card -->
+      <div class="card overflow-hidden">
+
+        <!-- Toolbar -->
+        <div class="p-4 sm:p-5 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center gap-3">
+          <div class="relative flex-1 max-w-sm">
+            <svg class="absolute left-3.5 top-1/2 -translate-y-1/2" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input id="searchInput" placeholder="Search by name, email, company…" class="w-full bg-[#F1F4F8] rounded-lg pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[var(--sky)] placeholder:text-slate-400" />
+          </div>
+
+          <div class="flex items-center gap-2 flex-wrap">
+            <select id="statusFilter" class="text-sm border border-slate-200 rounded-lg px-3 py-2.5 outline-none text-slate-600 bg-white">
+              <option value="all">All statuses</option>
+              <option value="Active">Active</option>
+              <option value="Pending">Pending</option>
+              <option value="Suspended">Suspended</option>
+            </select>
+            <select id="planFilter" class="text-sm border border-slate-200 rounded-lg px-3 py-2.5 outline-none text-slate-600 bg-white">
+              <option value="all">All plans</option>
+              <option value="Starter">Starter</option>
+              <option value="Growth">Growth</option>
+              <option value="Enterprise">Enterprise</option>
+            </select>
+            <button id="clearFilters" class="text-sm font-medium text-slate-400 hover:text-[var(--navy)] px-2">Clear</button>
+          </div>
+
+          <div class="lg:ml-auto flex items-center gap-2">
+            <button onclick="exportCSV()" class="flex items-center gap-2 border border-slate-200 text-slate-600 text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-slate-50 transition">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+              Export
+            </button>
+            <button onclick="openModal()" class="flex items-center gap-2 grad-a text-white text-sm font-semibold px-4 py-2.5 rounded-lg glow hover:opacity-90 transition">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              Add customer
+            </button>
+          </div>
+        </div>
+
+        <!-- Bulk actions bar -->
+        <div id="bulkBar" class="hidden items-center gap-4 px-5 py-3 bg-[#EAF3FC] border-b border-[#D6E7F7] text-sm">
+          <span class="font-semibold text-[var(--navy)]"><span id="selectedCount">0</span> selected</span>
+          <button onclick="bulkAction('Emailed')" class="text-slate-600 hover:text-[var(--navy)] font-medium flex items-center gap-1.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 6l-10 7L2 6"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>
+            Email
+          </button>
+          <button onclick="bulkAction('Suspended')" class="text-slate-600 hover:text-amber-600 font-medium flex items-center gap-1.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l14.14 14.14"/></svg>
+            Suspend
+          </button>
+          <button onclick="bulkAction('Deleted')" class="text-rose-500 hover:text-rose-600 font-medium flex items-center gap-1.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg>
+            Delete
+          </button>
+          <button onclick="clearSelection()" class="ml-auto text-slate-400 hover:text-slate-600">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto scrollbar-thin">
+          <table class="w-full text-sm min-w-[860px]">
+            <thead>
+              <tr class="text-left text-slate-400 border-b border-slate-100 bg-[#FBFCFD]">
+                <th class="py-3 pl-5 pr-2 w-10">
+                  <input type="checkbox" id="selectAll" class="checkbox w-4 h-4 rounded" />
+                </th>
+                <th class="sortable font-medium py-3 pr-4" data-key="name">
+                  <span class="inline-flex items-center gap-1">Customer <svg class="sort-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
+                </th>
+                <th class="sortable font-medium py-3 pr-4" data-key="company">
+                  <span class="inline-flex items-center gap-1">Company <svg class="sort-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
+                </th>
+                <th class="sortable font-medium py-3 pr-4" data-key="plan">
+                  <span class="inline-flex items-center gap-1">Plan <svg class="sort-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
+                </th>
+                <th class="sortable font-medium py-3 pr-4" data-key="spend">
+                  <span class="inline-flex items-center gap-1">Spend <svg class="sort-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
+                </th>
+                <th class="sortable font-medium py-3 pr-4" data-key="joined">
+                  <span class="inline-flex items-center gap-1">Joined <svg class="sort-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
+                </th>
+                <th class="sortable font-medium py-3 pr-4" data-key="status">
+                  <span class="inline-flex items-center gap-1">Status <svg class="sort-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
+                </th>
+                <th class="font-medium py-3 pr-5 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+
+        <!-- No results -->
+        <div id="noResults" class="hidden flex-col items-center justify-center py-16 text-center">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" class="mb-3"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <p class="font-semibold text-slate-500">No customers match your filters</p>
+          <p class="text-sm text-slate-400 mt-1">Try a different search term or clear filters.</p>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex flex-col sm:flex-row items-center gap-3 justify-between px-5 py-4 border-t border-slate-100">
+          <div class="flex items-center gap-2 text-sm text-slate-500">
+            <span id="pageSummary">—</span>
+            <select id="pageSize" class="ml-2 border border-slate-200 rounded-lg px-2 py-1 text-sm outline-none bg-white">
+              <option value="8">8 / page</option>
+              <option value="10" selected>10 / page</option>
+              <option value="20">20 / page</option>
+              <option value="50">50 / page</option>
+            </select>
+          </div>
+          <div id="pagination" class="flex items-center gap-1"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Add Customer Modal -->
+<div id="modalOverlay" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+  <div id="modalPanel" class="bg-white rounded-2xl w-full max-w-lg shadow-2xl transform transition-all duration-200 scale-95 opacity-0">
+
+    <div class="flex items-start justify-between px-6 pt-6 pb-4 border-b border-slate-100">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl grad-a flex items-center justify-center shrink-0">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div>
+          <h3 class="font-display font-bold text-lg text-[var(--navy)]">Add customer</h3>
+          <p class="text-sm text-slate-500">Create a new account in your workspace.</p>
+        </div>
+      </div>
+      <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 p-1">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <form id="customerForm" novalidate>
+      <div class="px-6 py-5 space-y-4 max-h-[70vh] overflow-y-auto scrollbar-thin">
+
+        <div>
+          <label for="custName" class="text-sm font-medium text-slate-600">Full name</label>
+          <input id="custName" type="text" placeholder="Jane Doe" class="input-field mt-1.5 w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm outline-none" />
+          <p id="custNameError" class="hidden text-xs text-rose-500 mt-1.5">Enter the customer's full name.</p>
+        </div>
+
+        <div>
+          <label for="custEmail" class="text-sm font-medium text-slate-600">Email address</label>
+          <input id="custEmail" type="email" placeholder="jane@company.com" class="input-field mt-1.5 w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm outline-none" />
+          <p id="custEmailError" class="hidden text-xs text-rose-500 mt-1.5">Enter a valid email address.</p>
+        </div>
+
+        <div>
+          <label for="custCompany" class="text-sm font-medium text-slate-600">Company</label>
+          <input id="custCompany" type="text" placeholder="Brightline Co." class="input-field mt-1.5 w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm outline-none" />
+          <p id="custCompanyError" class="hidden text-xs text-rose-500 mt-1.5">Enter a company name.</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="custPlan" class="text-sm font-medium text-slate-600">Plan</label>
+            <select id="custPlan" class="input-field mt-1.5 w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm outline-none bg-white">
+              <option value="Starter">Starter</option>
+              <option value="Growth" selected>Growth</option>
+              <option value="Enterprise">Enterprise</option>
+            </select>
+          </div>
+          <div>
+            <label for="custStatus" class="text-sm font-medium text-slate-600">Status</label>
+            <select id="custStatus" class="input-field mt-1.5 w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm outline-none bg-white">
+              <option value="Active" selected>Active</option>
+              <option value="Pending">Pending</option>
+              <option value="Suspended">Suspended</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label for="custSpend" class="text-sm font-medium text-slate-600">Initial spend ($)</label>
+          <input id="custSpend" type="number" min="0" step="0.01" placeholder="0.00" class="input-field mt-1.5 w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm outline-none" />
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 px-6 py-4 border-t border-slate-100 bg-[#FBFCFD] rounded-b-2xl">
+        <button type="button" onclick="closeModal()" class="flex-1 border border-slate-200 text-slate-600 text-sm font-semibold py-2.5 rounded-xl hover:bg-slate-50 transition">Cancel</button>
+        <button type="submit" id="custSubmitBtn" class="flex-1 grad-a text-white text-sm font-semibold py-2.5 rounded-xl glow hover:opacity-90 transition flex items-center justify-center gap-2">
+          <span id="custSubmitText">Add customer</span>
+          <svg id="custSubmitSpinner" class="hidden animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="9" opacity="0.25"/><path d="M21 12a9 9 0 0 0-9-9"/></svg>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast fixed bottom-6 right-6 translate-y-24 opacity-0 bg-[var(--navy)] text-white text-sm font-medium px-5 py-3 rounded-xl shadow-xl z-50 flex items-center gap-2">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--sky)" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+  <span id="toastMsg">Done</span>
+</div>
+
+<script>
+  // ---------- Sidebar ----------
+  function toggleSidebar(){
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('hidden');
+  }
+
+  // ---------- Sidebar dropdown group ----------
+  function toggleDropdown(id, btn){
+    const panel = document.getElementById(id);
+    const chevron = btn.querySelector('.dropdown-chevron');
+    panel.classList.toggle('hidden');
+    chevron.classList.toggle('rotated');
+  }
+
+  // ---------- Toast ----------
+  let toastTimer;
+  function showToast(msg){
+    const toast = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg || 'Done';
+    toast.classList.remove('translate-y-24','opacity-0');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.add('translate-y-24','opacity-0'), 2400);
+  }
+
+  // ---------- Sample data ----------
+  const firstNames = ['Maria','Daniel','Priya','Tom','Sofia','James','Elena','Kwame','Yuki','Liam','Fatima','Noah','Aiko','Carlos','Ingrid','Omar','Lucia','Erik','Nia','Hassan','Chloe','Ravi','Anya','Miguel','Sara'];
+  const lastNames = ['Chen','Osei','Nair','Whitfield','Lindqvist','Park','Ivanova','Mensah','Tanaka','O\'Brien','Al-Sayed','Rossi','Kobayashi','Fernandez','Berg','Farouk','Ferreira','Johansson','Diallo','Malik','Dubois','Kapoor','Petrova','Alvarez','Kim'];
+  const companies = ['Brightline Co.','Vector Labs','Northwind Retail','Cobalt Systems','Fernwood Media','Skyline Freight','Harbor & Co.','Quartz Analytics','Maple Studio','Ridgeline Tech','Lumen Health','Cedar Finance','Atlas Robotics','Willow Foods','Bluepeak Energy'];
+  const plans = ['Starter','Growth','Enterprise'];
+  const statuses = ['Active','Pending','Suspended'];
+
+  function seededRandom(seed){ let x = Math.sin(seed) * 10000; return x - Math.floor(x); }
+
+  const customers = Array.from({length: 47}, (_, i) => {
+    const fn = firstNames[i % firstNames.length];
+    const ln = lastNames[(i * 3 + 7) % lastNames.length];
+    const r1 = seededRandom(i + 1);
+    const r2 = seededRandom(i + 99);
+    const r3 = seededRandom(i + 202);
+    const day = 1 + Math.floor(r2 * 27);
+    const month = 1 + Math.floor(r3 * 7);
+    return {
+      id: i + 1,
+      name: `${fn} ${ln}`,
+      email: `${fn.toLowerCase()}.${ln.toLowerCase().replace("'","")}@mail.com`,
+      avatar: (i % 70) + 1,
+      company: companies[i % companies.length],
+      plan: plans[Math.floor(r1 * 3)],
+      spend: Math.round((200 + r1 * 4800) * 100) / 100,
+      joined: `2026-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`,
+      status: statuses[Math.floor(r3 * 3)]
+    };
+  });
+
+  // ---------- State ----------
+  let state = {
+    search: '',
+    status: 'all',
+    plan: 'all',
+    sortKey: 'name',
+    sortDir: 'asc',
+    page: 1,
+    pageSize: 10,
+    selected: new Set()
+  };
+
+  const statusStyle = {
+    Active: 'bg-emerald-50 text-emerald-600',
+    Pending: 'bg-amber-50 text-amber-600',
+    Suspended: 'bg-rose-50 text-rose-600'
+  };
+  const planStyle = {
+    Starter: 'bg-slate-100 text-slate-600',
+    Growth: 'bg-[#E9F2FC] text-[var(--navy)]',
+    Enterprise: 'bg-gradient-to-r from-[#005AA7] to-[#1c92d2] text-white'
+  };
+
+  function getFiltered(){
+    return customers.filter(c => {
+      const matchesSearch = state.search === '' ||
+        c.name.toLowerCase().includes(state.search) ||
+        c.email.toLowerCase().includes(state.search) ||
+        c.company.toLowerCase().includes(state.search);
+      const matchesStatus = state.status === 'all' || c.status === state.status;
+      const matchesPlan = state.plan === 'all' || c.plan === state.plan;
+      return matchesSearch && matchesStatus && matchesPlan;
+    });
+  }
+
+  function getSorted(list){
+    const dir = state.sortDir === 'asc' ? 1 : -1;
+    return [...list].sort((a,b) => {
+      let av = a[state.sortKey], bv = b[state.sortKey];
+      if(typeof av === 'string') { av = av.toLowerCase(); bv = bv.toLowerCase(); }
+      if(av < bv) return -1 * dir;
+      if(av > bv) return 1 * dir;
+      return 0;
+    });
+  }
+
+  function formatDate(iso){
+    const d = new Date(iso + 'T00:00:00');
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+  function formatMoney(n){
+    return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function render(){
+    const filtered = getSorted(getFiltered());
+    const total = filtered.length;
+    const pageCount = Math.max(1, Math.ceil(total / state.pageSize));
+    state.page = Math.min(state.page, pageCount);
+    const startIdx = (state.page - 1) * state.pageSize;
+    const pageItems = filtered.slice(startIdx, startIdx + state.pageSize);
+
+    // stats
+    document.getElementById('statTotal').textContent = customers.length;
+    document.getElementById('statActive').textContent = customers.filter(c=>c.status==='Active').length;
+    document.getElementById('statPending').textContent = customers.filter(c=>c.status==='Pending').length;
+    document.getElementById('statSuspended').textContent = customers.filter(c=>c.status==='Suspended').length;
+
+    // rows
+    const tbody = document.getElementById('tableBody');
+    const noResults = document.getElementById('noResults');
+    if(pageItems.length === 0){
+      tbody.innerHTML = '';
+      noResults.classList.remove('hidden');
+      noResults.classList.add('flex');
+    } else {
+      noResults.classList.add('hidden');
+      noResults.classList.remove('flex');
+      tbody.innerHTML = pageItems.map(c => `
+        <tr class="border-b border-slate-50 last:border-0 hover:bg-[#F8FAFD] transition ${state.selected.has(c.id) ? 'row-selected' : ''}">
+          <td class="py-3 pl-5 pr-2">
+            <input type="checkbox" class="checkbox row-check w-4 h-4 rounded" data-id="${c.id}" ${state.selected.has(c.id) ? 'checked' : ''} />
+          </td>
+          <td class="py-3 pr-4">
+            <div class="flex items-center gap-2.5">
+              <img src="https://i.pravatar.cc/64?img=${c.avatar}" class="w-8 h-8 rounded-full" />
+              <div class="min-w-0">
+                <p class="font-medium text-slate-700 truncate">${c.name}</p>
+                <p class="text-xs text-slate-400 truncate">${c.email}</p>
+              </div>
+            </div>
+          </td>
+          <td class="py-3 pr-4 text-slate-500">${c.company}</td>
+          <td class="py-3 pr-4"><span class="text-xs font-semibold px-2.5 py-1 rounded-full ${planStyle[c.plan]}">${c.plan}</span></td>
+          <td class="py-3 pr-4 font-semibold text-slate-700">${formatMoney(c.spend)}</td>
+          <td class="py-3 pr-4 text-slate-500">${formatDate(c.joined)}</td>
+          <td class="py-3 pr-4"><span class="text-xs font-semibold px-2.5 py-1 rounded-full ${statusStyle[c.status]}">${c.status}</span></td>
+          <td class="py-3 pr-5 text-right">
+            <div class="inline-flex items-center gap-1">
+              <button onclick="showToast('Viewing ${c.name}')" class="p-1.5 rounded-lg text-slate-400 hover:text-[var(--navy)] hover:bg-slate-100" title="View">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+              <button onclick="showToast('Editing ${c.name}')" class="p-1.5 rounded-lg text-slate-400 hover:text-[var(--navy)] hover:bg-slate-100" title="Edit">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
+              </button>
+              <button onclick="deleteOne(${c.id})" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50" title="Delete">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // header sort indicators
+    document.querySelectorAll('th.sortable').forEach(th => {
+      th.classList.remove('sort-asc','sort-desc');
+      if(th.dataset.key === state.sortKey){
+        th.classList.add(state.sortDir === 'asc' ? 'sort-asc' : 'sort-desc');
+      }
+    });
+
+    // select-all checkbox state
+    const selectAll = document.getElementById('selectAll');
+    const pageIds = pageItems.map(c => c.id);
+    selectAll.checked = pageIds.length > 0 && pageIds.every(id => state.selected.has(id));
+    selectAll.indeterminate = !selectAll.checked && pageIds.some(id => state.selected.has(id));
+
+    // pagination summary + controls
+    document.getElementById('pageSummary').textContent = total === 0
+      ? 'No results'
+      : `Showing ${startIdx + 1}–${Math.min(startIdx + state.pageSize, total)} of ${total}`;
+
+    const pagination = document.getElementById('pagination');
+    let btns = '';
+    btns += `<button onclick="goPage(${state.page - 1})" ${state.page === 1 ? 'disabled' : ''} class="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium border border-slate-200 text-slate-500 disabled:opacity-40 hover:bg-slate-50">‹</button>`;
+    const pagesToShow = new Set([1, pageCount, state.page, state.page - 1, state.page + 1]);
+    let lastPrinted = 0;
+    for(let p = 1; p <= pageCount; p++){
+      if(pagesToShow.has(p)){
+        if(p - lastPrinted > 1) btns += `<span class="px-1 text-slate-300">…</span>`;
+        btns += `<button onclick="goPage(${p})" class="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium ${p === state.page ? 'bg-[var(--navy)] text-white' : 'border border-slate-200 text-slate-500 hover:bg-slate-50'}">${p}</button>`;
+        lastPrinted = p;
+      }
+    }
+    btns += `<button onclick="goPage(${state.page + 1})" ${state.page === pageCount ? 'disabled' : ''} class="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium border border-slate-200 text-slate-500 disabled:opacity-40 hover:bg-slate-50">›</button>`;
+    pagination.innerHTML = btns;
+
+    // bulk bar
+    const bulkBar = document.getElementById('bulkBar');
+    if(state.selected.size > 0){
+      bulkBar.classList.remove('hidden');
+      bulkBar.classList.add('flex');
+      document.getElementById('selectedCount').textContent = state.selected.size;
+    } else {
+      bulkBar.classList.add('hidden');
+      bulkBar.classList.remove('flex');
+    }
+
+    // row checkbox listeners
+    document.querySelectorAll('.row-check').forEach(cb => {
+      cb.addEventListener('change', function(){
+        const id = Number(this.dataset.id);
+        if(this.checked) state.selected.add(id); else state.selected.delete(id);
+        render();
+      });
+    });
+  }
+
+  function goPage(p){
+    const filtered = getFiltered();
+    const pageCount = Math.max(1, Math.ceil(filtered.length / state.pageSize));
+    if(p < 1 || p > pageCount) return;
+    state.page = p;
+    render();
+  }
+
+  function deleteOne(id){
+    const idx = customers.findIndex(c => c.id === id);
+    if(idx !== -1){
+      customers.splice(idx, 1);
+      state.selected.delete(id);
+      showToast('Customer deleted');
+      render();
+    }
+  }
+
+  function bulkAction(label){
+    if(label === 'Deleted'){
+      state.selected.forEach(id => {
+        const idx = customers.findIndex(c => c.id === id);
+        if(idx !== -1) customers.splice(idx, 1);
+      });
+    } else if(label === 'Suspended'){
+      customers.forEach(c => { if(state.selected.has(c.id)) c.status = 'Suspended'; });
+    }
+    showToast(`${state.selected.size} customer(s) ${label.toLowerCase()}`);
+    state.selected.clear();
+    render();
+  }
+
+  function clearSelection(){
+    state.selected.clear();
+    render();
+  }
+
+  function exportCSV(){
+    const rows = getSorted(getFiltered());
+    const header = ['Name','Email','Company','Plan','Spend','Joined','Status'];
+    const csv = [header.join(',')].concat(
+      rows.map(c => [c.name, c.email, c.company, c.plan, c.spend, c.joined, c.status].map(v => `"${v}"`).join(','))
+    ).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'customers.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Exported customers.csv');
+  }
+
+  // ---------- Event bindings ----------
+  document.getElementById('searchInput').addEventListener('input', function(){
+    state.search = this.value.trim().toLowerCase();
+    state.page = 1;
+    render();
+  });
+  document.getElementById('statusFilter').addEventListener('change', function(){
+    state.status = this.value; state.page = 1; render();
+  });
+  document.getElementById('planFilter').addEventListener('change', function(){
+    state.plan = this.value; state.page = 1; render();
+  });
+  document.getElementById('clearFilters').addEventListener('click', function(){
+    state.search = ''; state.status = 'all'; state.plan = 'all'; state.page = 1;
+    document.getElementById('searchInput').value = '';
+    document.getElementById('statusFilter').value = 'all';
+    document.getElementById('planFilter').value = 'all';
+    render();
+  });
+  document.getElementById('pageSize').addEventListener('change', function(){
+    state.pageSize = Number(this.value); state.page = 1; render();
+  });
+  document.querySelectorAll('th.sortable').forEach(th => {
+    th.addEventListener('click', function(){
+      const key = this.dataset.key;
+      if(state.sortKey === key){
+        state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        state.sortKey = key; state.sortDir = 'asc';
+      }
+      render();
+    });
+  });
+  document.getElementById('selectAll').addEventListener('change', function(){
+    const filtered = getSorted(getFiltered());
+    const startIdx = (state.page - 1) * state.pageSize;
+    const pageIds = filtered.slice(startIdx, startIdx + state.pageSize).map(c => c.id);
+    if(this.checked) pageIds.forEach(id => state.selected.add(id));
+    else pageIds.forEach(id => state.selected.delete(id));
+    render();
+  });
+
+  render();
+
+  // ---------- Add Customer Modal ----------
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalPanel = document.getElementById('modalPanel');
+  let nextId = Math.max(...customers.map(c => c.id)) + 1;
+
+  function openModal(){
+    modalOverlay.classList.remove('hidden');
+    modalOverlay.classList.add('flex');
+    requestAnimationFrame(() => {
+      modalPanel.classList.remove('scale-95','opacity-0');
+      modalPanel.classList.add('scale-100','opacity-100');
+    });
+    document.body.classList.add('overflow-hidden');
+    setTimeout(() => document.getElementById('custName').focus(), 150);
+  }
+
+  function closeModal(){
+    modalPanel.classList.remove('scale-100','opacity-100');
+    modalPanel.classList.add('scale-95','opacity-0');
+    document.body.classList.remove('overflow-hidden');
+    setTimeout(() => {
+      modalOverlay.classList.add('hidden');
+      modalOverlay.classList.remove('flex');
+      resetCustomerForm();
+    }, 180);
+  }
+
+  function resetCustomerForm(){
+    document.getElementById('customerForm').reset();
+    ['custName','custEmail','custCompany'].forEach(id => {
+      document.getElementById(id).classList.remove('border-rose-400');
+      document.getElementById(id + 'Error').classList.add('hidden');
+    });
+    document.getElementById('custPlan').value = 'Growth';
+    document.getElementById('custStatus').value = 'Active';
+  }
+
+  // close on overlay click (not when clicking inside the panel)
+  modalOverlay.addEventListener('click', function(e){
+    if(e.target === modalOverlay) closeModal();
+  });
+  // close on Escape
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && !modalOverlay.classList.contains('hidden')) closeModal();
+  });
+  // clear field errors as user types
+  ['custName','custEmail','custCompany'].forEach(id => {
+    document.getElementById(id).addEventListener('input', function(){
+      this.classList.remove('border-rose-400');
+      document.getElementById(id + 'Error').classList.add('hidden');
+    });
+  });
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  document.getElementById('customerForm').addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const nameEl = document.getElementById('custName');
+    const emailEl = document.getElementById('custEmail');
+    const companyEl = document.getElementById('custCompany');
+    let valid = true;
+
+    if(nameEl.value.trim().length < 2){
+      nameEl.classList.add('border-rose-400');
+      document.getElementById('custNameError').classList.remove('hidden');
+      valid = false;
+    }
+    if(!emailRegex.test(emailEl.value.trim())){
+      emailEl.classList.add('border-rose-400');
+      document.getElementById('custEmailError').classList.remove('hidden');
+      valid = false;
+    }
+    if(companyEl.value.trim().length < 2){
+      companyEl.classList.add('border-rose-400');
+      document.getElementById('custCompanyError').classList.remove('hidden');
+      valid = false;
+    }
+    if(!valid) return;
+
+    const btn = document.getElementById('custSubmitBtn');
+    const text = document.getElementById('custSubmitText');
+    const spinner = document.getElementById('custSubmitSpinner');
+    btn.disabled = true;
+    text.textContent = 'Adding…';
+    spinner.classList.remove('hidden');
+
+    setTimeout(() => {
+      const spendVal = parseFloat(document.getElementById('custSpend').value);
+      customers.unshift({
+        id: nextId++,
+        name: nameEl.value.trim(),
+        email: emailEl.value.trim(),
+        avatar: Math.floor(Math.random() * 70) + 1,
+        company: companyEl.value.trim(),
+        plan: document.getElementById('custPlan').value,
+        spend: isNaN(spendVal) ? 0 : Math.round(spendVal * 100) / 100,
+        joined: new Date().toISOString().slice(0,10),
+        status: document.getElementById('custStatus').value
+      });
+
+      btn.disabled = false;
+      text.textContent = 'Add customer';
+      spinner.classList.add('hidden');
+
+      state.page = 1;
+      closeModal();
+      render();
+      showToast(`${nameEl.value.trim()} added successfully`);
+    }, 700);
+  });
+</script>
+</body>
+</html>
