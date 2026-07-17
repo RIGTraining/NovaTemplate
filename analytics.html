@@ -57,11 +57,13 @@
     </div>
     <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto scrollbar-thin">
       <p class="text-[11px] uppercase tracking-wider text-white/40 px-3 mb-2 font-semibold">Overview</p>
-      <a href="Driver.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+      <a href="#" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
         Home
       </a>
-      <a href="analytics.html" class="nav-link active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white">
+     
+
+      <a href="analytics.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-4"/></svg>
         Analytics
       </a>
@@ -69,9 +71,25 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"/></svg>
         Notification
       </a>
-      <a href="route.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+
+       <a href="promotion.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v9H4v-9M2 7l10-5 10 5-10 5z"/><path d="M12 22V12"/></svg>
+        Promotion
+      </a>
+      
+      <p class="text-[11px] uppercase tracking-wider text-white/40 px-3 mb-2 mt-6 font-semibold">General</p>
+     
+       <a href="route.html" class="nav-link active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16"/><path d="M5 7l-2 2 2 2"/><path d="M19 13l2 2-2 2"/></svg>
-        Route Management
+        Routes
+      </a>
+      <a href="drivers-page.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Drivers
+      </a>
+      <a href="vehicles-page.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7h-9M14 17H5M17 20l3-3-3-3M7 4L4 7l3 3"/></svg>
+        Vehicles
       </a>
       <p class="text-[11px] uppercase tracking-wider text-white/40 px-3 mb-2 mt-6 font-semibold">Manage</p>
       <div>
@@ -81,29 +99,15 @@
           <svg class="dropdown-chevron ml-auto transition-transform duration-200" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
         </button>
         <div id="navDropdown2" class="hidden pl-9 pr-1 mt-1 space-y-1">
-          <a href="#" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Home Page</a>
-          <a href="#" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Blog Post Page</a>
-          <a href="#" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Contact Page</a>
-        </div>
-      </div>
-      <a href="#" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v9H4v-9M2 7l10-5 10 5-10 5z"/><path d="M12 22V12"/></svg>
-        Promotion
-      </a>
-      <div>
-        <button type="button" onclick="toggleDropdown('navDropdown3', this)" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          Support
-          <svg class="dropdown-chevron ml-auto transition-transform duration-200 rotated" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div id="navDropdown3" class="pl-9 pr-1 mt-1 space-y-1">
+          <a href="vision-mission.html" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Vision & Mission</a>
+          <a href="blog-post-page.html" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Blogs</a>
+          <a href="team.html" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Team</a>
           <a href="faq.html" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>FAQ</a>
-          <a href="rental_policy.html" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Rental policy</a>
-          <a href="#" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Required documents</a>
-          <a href="terms_conditions.html" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Terms & conditions</a>
-          <a href="#" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Contact support</a>
+          <a href="testimonials.html" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Testimonials</a>
         </div>
       </div>
+     
+     
       <p class="text-[11px] uppercase tracking-wider text-white/40 px-3 mb-2 mt-6 font-semibold">System</p>
       <a href="#" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 .51 1z"/></svg>
