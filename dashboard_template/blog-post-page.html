@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nimbus Admin — Blog Posts</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky:#7ab9ec;
+    --navy:#1F4E79;
+    --paper:#F8F9FA;
+    --grad-a-start:#005AA7;
+    --grad-a-end:#FFFDE4;
+    --grad-b-start:#1c92d2;
+    --grad-b-end:#f2fcfe;
+  }
+  *{font-family:'Manrope',sans-serif;}
+  .font-display{font-family:'Sora',sans-serif;}
+  body{background:var(--paper);}
+  .grad-a{background:linear-gradient(135deg,var(--grad-a-start) 0%,var(--grad-a-end) 100%);}
+  .grad-b{background:linear-gradient(135deg,var(--grad-b-start) 0%,var(--grad-b-end) 100%);}
+  .sidebar-grad{background:linear-gradient(200deg,var(--navy) 0%,#123452 100%);}
+  .scrollbar-thin::-webkit-scrollbar{width:6px;height:6px;}
+  .scrollbar-thin::-webkit-scrollbar-thumb{background:#c9dcee;border-radius:10px;}
+  .card{background:#fff;border:1px solid #E7ECF1;border-radius:18px;}
+  .nav-link{transition:all .18s ease;}
+  .nav-link:hover{background:rgba(122,185,236,0.14);}
+  .nav-link.active{background:rgba(122,185,236,0.22);border-left:3px solid var(--sky);}
+  .dropdown-chevron.rotated{transform:rotate(180deg);}
+  .glow{box-shadow:0 8px 24px -8px rgba(31,78,121,0.25);}
+  ::selection{background:var(--sky);color:#fff;}
+  .toast{transition:transform .3s ease, opacity .3s ease;}
+  .input-field{transition:all .18s ease;}
+  .input-field:focus{border-color:var(--sky);box-shadow:0 0 0 4px rgba(122,185,236,0.25);}
+  .post-card{transition:transform .18s ease, box-shadow .18s ease;}
+  .post-card:hover{transform:translateY(-3px);box-shadow:0 14px 28px -14px rgba(31,78,121,0.28);}
+  .dropzone{transition:all .18s ease;}
+  .dropzone.drag-over{border-color:var(--sky);background:rgba(122,185,236,0.10);}
+  .cat-pill{font-size:11px;font-weight:700;letter-spacing:.02em;padding:4px 10px;border-radius:999px;}
+  @media (max-width: 1024px){
+    #sidebar{transform:translateX(-100%);}
+    #sidebar.open{transform:translateX(0);}
+  }
+</style>
+</head>
+<body class="text-[#1F2937]">
+
+<div class="flex min-h-screen">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar" class="sidebar-grad fixed lg:static z-40 w-72 min-h-screen text-white flex flex-col transition-transform duration-300 ease-out">
+    <div class="flex items-center gap-3 px-6 py-6 border-b border-white/10">
+      <div class="w-10 h-10 rounded-xl grad-b flex items-center justify-center font-display font-bold text-[var(--navy)] text-lg shadow-lg">N</div>
+      <div>
+        <p class="font-display font-bold text-lg leading-none">NOVA</p>
+        <p class="text-xs text-white/50 mt-1">EV Transport</p>
+      </div>
+      <button onclick="toggleSidebar()" class="ml-auto lg:hidden text-white/70 hover:text-white">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto scrollbar-thin">
+      <p class="text-[11px] uppercase tracking-wider text-white/40 px-3 mb-2 font-semibold">Overview</p>
+      <a href="#" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+        Home
+      </a>
+     
+
+      <a href="analytics.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-4"/></svg>
+        Analytics
+      </a>
+      <a href="notification.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"/></svg>
+        Notification
+      </a>
+
+       <a href="promotion.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v9H4v-9M2 7l10-5 10 5-10 5z"/><path d="M12 22V12"/></svg>
+        Promotion
+      </a>
+      
+      <p class="text-[11px] uppercase tracking-wider text-white/40 px-3 mb-2 mt-6 font-semibold">General</p>
+     
+       <a href="route.html" class="nav-link active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16"/><path d="M5 7l-2 2 2 2"/><path d="M19 13l2 2-2 2"/></svg>
+        Routes
+      </a>
+      <a href="drivers-page.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Drivers
+      </a>
+      <a href="vehicles-page.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7h-9M14 17H5M17 20l3-3-3-3M7 4L4 7l3 3"/></svg>
+        Vehicles
+      </a>
+      <p class="text-[11px] uppercase tracking-wider text-white/40 px-3 mb-2 mt-6 font-semibold">Manage</p>
+      <div>
+        <button type="button" onclick="toggleDropdown('navDropdown2', this)" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 8h18"/><path d="M8 12h8"/><path d="M8 16h8"/></svg>
+          Website
+          <svg class="dropdown-chevron ml-auto transition-transform duration-200" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div id="navDropdown2" class="hidden pl-9 pr-1 mt-1 space-y-1">
+          <a href="vision-mission.html" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Vision & Mission</a>
+          <a href="blog-post-page.html" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Blogs</a>
+          <a href="team.html" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Team</a>
+          <a href="faq.html" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>FAQ</a>
+          <a href="testimonials.html" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Testimonials</a>
+        </div>
+      </div>
+     
+     
+      <p class="text-[11px] uppercase tracking-wider text-white/40 px-3 mb-2 mt-6 font-semibold">System</p>
+      <a href="#" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 .51 1z"/></svg>
+        Settings
+      </a>
+    </nav>
+    <div class="p-4 border-t border-white/10">
+      <div class="flex items-center gap-3 p-3 rounded-xl bg-white/5">
+        <img src="https://i.pravatar.cc/64?img=32" class="w-9 h-9 rounded-full ring-2 ring-[var(--sky)]/50" />
+        <div class="min-w-0">
+          <p class="text-sm font-semibold truncate">Alex Morgan</p>
+          <p class="text-xs text-white/50 truncate">Super Admin</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div id="overlay" onclick="toggleSidebar()" class="hidden fixed inset-0 bg-black/30 z-30 lg:hidden"></div>
+
+  <!-- MAIN -->
+  <div class="flex-1 min-w-0 flex flex-col">
+
+    <!-- TOPBAR -->
+    <header class="sticky top-0 z-20 bg-white/80 backdrop-blur border-b border-[#E7ECF1] px-4 sm:px-8 py-4 flex items-center gap-4">
+      <button onclick="toggleSidebar()" class="lg:hidden text-[var(--navy)]">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+      <div>
+        <h1 class="font-display font-bold text-xl sm:text-2xl text-[var(--navy)]">Blog Posts</h1>
+        <p class="text-sm text-slate-500 hidden sm:block">Publish updates, guides and news to your website.</p>
+      </div>
+      <div class="ml-auto flex items-center gap-3">
+        <button class="relative w-10 h-10 rounded-full bg-[#F1F4F8] flex items-center justify-center hover:bg-[#e7edf5] transition">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="absolute top-1.5 right-2 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white"></span>
+        </button>
+        <img src="https://i.pravatar.cc/64?img=32" class="w-9 h-9 rounded-full ring-2 ring-[var(--sky)]/50" />
+        <div class="relative">
+          <button onclick="toggleDropdown('userDropdown', this)" class="flex items-center gap-2 text-sm font-medium text-[var(--navy)] hover:text-[var(--sky)] transition">
+            <span>Ko Thet</span>
+            <svg class="dropdown-chevron transition-transform duration-200" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-2 z-10">
+            <a href="#" class="block px-4 py-2 text-sm text-slate-600 hover:bg-[#F1F4F8]">Profile</a>
+            <a href="#" class="block px-4 py-2 text-sm text-slate-600 hover:bg-[#F1F4F8]">Settings</a>
+            <a href="#" class="block px-4 py-2 text-sm text-slate-600 hover:bg-[#F1F4F8]">Billing</a>
+            <div class="border-t border-slate-100 my-1"></div>
+            <a href="#" class="block px-4 py-2 text-sm text-slate-600 hover:bg-[#F1F4F8]">Sign out</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 px-4 sm:px-8 py-6 max-w-[1400px] w-full mx-auto">
+
+      <!-- Summary chips -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+        <div class="card p-4">
+          <p class="text-xs text-slate-400 font-medium">Total Posts</p>
+          <p class="text-xl font-display font-bold text-[var(--navy)] mt-1" id="statTotal">—</p>
+        </div>
+        <div class="card p-4">
+          <p class="text-xs text-slate-400 font-medium">Travel Tips</p>
+          <p class="text-xl font-display font-bold text-sky-600 mt-1" id="statTravel">—</p>
+        </div>
+        <div class="card p-4">
+          <p class="text-xs text-slate-400 font-medium">Car Rental Guides</p>
+          <p class="text-xl font-display font-bold text-emerald-600 mt-1" id="statRental">—</p>
+        </div>
+        <div class="card p-4">
+          <p class="text-xs text-slate-400 font-medium">Company &amp; Promo</p>
+          <p class="text-xl font-display font-bold text-amber-600 mt-1" id="statCompany">—</p>
+        </div>
+      </div>
+
+      <!-- Blog card -->
+      <div class="card overflow-hidden">
+
+        <!-- Toolbar -->
+        <div class="p-4 sm:p-5 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center gap-3">
+          <div class="relative flex-1 max-w-sm">
+            <svg class="absolute left-3.5 top-1/2 -translate-y-1/2" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input id="searchInput" placeholder="Search by title…" class="w-full bg-[#F1F4F8] rounded-lg pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[var(--sky)] placeholder:text-slate-400" />
+          </div>
+
+          <div class="flex items-center gap-2 flex-wrap">
+            <select id="categoryFilter" class="text-sm border border-slate-200 rounded-lg px-3 py-2.5 outline-none text-slate-600 bg-white">
+              <option value="all">All categories</option>
+              <option value="Travel tips">Travel tips</option>
+              <option value="Car rental guides">Car rental guides</option>
+              <option value="Company news">Company news</option>
+              <option value="Promotion news">Promotion news</option>
+            </select>
+            <button id="clearFilters" class="text-sm font-medium text-slate-400 hover:text-[var(--navy)] px-2">Clear</button>
+          </div>
+
+          <div class="lg:ml-auto flex items-center gap-2">
+            <button onclick="openModal()" class="flex items-center gap-2 grad-a text-white text-sm font-semibold px-4 py-2.5 rounded-lg glow hover:opacity-90 transition">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              Create post
+            </button>
+          </div>
+        </div>
+
+        <!-- Blog grid -->
+        <div id="blogGrid" class="p-5 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"></div>
+
+        <!-- No results -->
+        <div id="noResults" class="hidden flex-col items-center justify-center py-16 text-center">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" class="mb-3"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <p class="font-semibold text-slate-500">No posts match your filters</p>
+          <p class="text-sm text-slate-400 mt-1">Try a different search term or clear filters.</p>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex flex-col sm:flex-row items-center gap-3 justify-between px-5 py-4 border-t border-slate-100">
+          <div class="flex items-center gap-2 text-sm text-slate-500">
+            <span id="pageSummary">—</span>
+          </div>
+          <div id="pagination" class="flex items-center gap-1"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Create Post Modal -->
+<div id="modalOverlay" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+  <div id="modalPanel" class="bg-white rounded-2xl w-full max-w-lg shadow-2xl transform transition-all duration-200 scale-95 opacity-0">
+
+    <div class="flex items-start justify-between px-6 pt-6 pb-4 border-b border-slate-100">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl grad-a flex items-center justify-center shrink-0">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+        </div>
+        <div>
+          <h3 class="font-display font-bold text-lg text-[var(--navy)]">Create post</h3>
+          <p class="text-sm text-slate-500">Publish a new update to your blog.</p>
+        </div>
+      </div>
+      <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 p-1">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <form id="postForm" novalidate>
+      <div class="px-6 py-5 space-y-4 max-h-[70vh] overflow-y-auto scrollbar-thin">
+
+        <!-- Image upload -->
+        <div>
+          <label class="text-sm font-medium text-slate-600">Cover image</label>
+          <div id="dropzone" class="dropzone mt-1.5 border-2 border-dashed border-slate-200 rounded-xl relative overflow-hidden cursor-pointer">
+            <input id="postImage" type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" />
+            <div id="dropzoneEmpty" class="flex flex-col items-center justify-center gap-2 py-8 text-center px-4">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              <p class="text-sm text-slate-500"><span class="font-semibold text-[var(--navy)]">Click to upload</span> or drag and drop</p>
+              <p class="text-xs text-slate-400">PNG or JPG, up to 5MB</p>
+            </div>
+            <img id="dropzonePreview" class="hidden w-full h-44 object-cover" />
+          </div>
+          <p id="postImageError" class="hidden text-xs text-rose-500 mt-1.5">Add a cover image for this post.</p>
+        </div>
+
+        <div>
+          <label for="postCategory" class="text-sm font-medium text-slate-600">Category</label>
+          <select id="postCategory" class="input-field mt-1.5 w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm outline-none bg-white">
+            <option value="Travel tips">Travel tips</option>
+            <option value="Car rental guides">Car rental guides</option>
+            <option value="Company news">Company news</option>
+            <option value="Promotion news">Promotion news</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="postTitle" class="text-sm font-medium text-slate-600">Title</label>
+          <input id="postTitle" type="text" placeholder="5 tips for your next road trip" class="input-field mt-1.5 w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm outline-none" />
+          <p id="postTitleError" class="hidden text-xs text-rose-500 mt-1.5">Enter a title for this post.</p>
+        </div>
+
+        <div>
+          <label for="postMessage" class="text-sm font-medium text-slate-600">Message</label>
+          <textarea id="postMessage" rows="4" placeholder="Write the post content…" class="input-field mt-1.5 w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm outline-none resize-none"></textarea>
+          <p id="postMessageError" class="hidden text-xs text-rose-500 mt-1.5">Enter a message for this post.</p>
+        </div>
+
+        <div>
+          <label for="postDateTime" class="text-sm font-medium text-slate-600">Publish date &amp; time</label>
+          <input id="postDateTime" type="datetime-local" class="input-field mt-1.5 w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm outline-none" />
+          <p id="postDateTimeError" class="hidden text-xs text-rose-500 mt-1.5">Choose a publish date and time.</p>
+        </div>
+
+      </div>
+
+      <div class="flex items-center gap-3 px-6 py-4 border-t border-slate-100 bg-[#FBFCFD] rounded-b-2xl">
+        <button type="button" onclick="closeModal()" class="flex-1 border border-slate-200 text-slate-600 text-sm font-semibold py-2.5 rounded-xl hover:bg-slate-50 transition">Cancel</button>
+        <button type="submit" id="postSubmitBtn" class="flex-1 grad-a text-white text-sm font-semibold py-2.5 rounded-xl glow hover:opacity-90 transition flex items-center justify-center gap-2">
+          <span id="postSubmitText">Publish post</span>
+          <svg id="postSubmitSpinner" class="hidden animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="9" opacity="0.25"/><path d="M21 12a9 9 0 0 0-9-9"/></svg>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast fixed bottom-6 right-6 z-[60] translate-y-4 opacity-0 pointer-events-none">
+  <div class="bg-[var(--navy)] text-white text-sm font-medium px-4 py-3 rounded-xl shadow-xl flex items-center gap-2">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--sky)" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+    <span id="toastMsg">Done</span>
+  </div>
+</div>
+
+<script>
+  // ---------- Sidebar ----------
+  function toggleSidebar(){
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('hidden');
+  }
+  function toggleDropdown(id, btn){
+    const el = document.getElementById(id);
+    el.classList.toggle('hidden');
+    btn.querySelector('.dropdown-chevron').classList.toggle('rotated');
+  }
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('.relative')) {
+      document.getElementById('userDropdown')?.classList.add('hidden');
+    }
+  });
+
+  // ---------- Category styling ----------
+  const categoryStyle = {
+    'Travel tips':        { bg:'#EAF3FC', text:'#1F4E79' },
+    'Car rental guides':  { bg:'#E8F8F1', text:'#0F7A4E' },
+    'Company news':       { bg:'#FDF2E3', text:'#B4690E' },
+    'Promotion news':     { bg:'#FCEAEF', text:'#B4266D' }
+  };
+
+  // ---------- Sample data ----------
+  let posts = [
+    {
+      id: 1,
+      title: 'Top 5 Road Trip Essentials for a Smooth Journey',
+      message: 'Planning a long drive? From snack strategy to the right playlist, here is everything you need to pack before hitting the road for a stress-free trip.',
+      category: 'Travel tips',
+      image: 'https://images.unsplash.com/photo-1502877338535-766e1452684a?w=800&q=80',
+      datetime: '2025-06-12T09:00'
+    },
+    {
+      id: 2,
+      title: 'How to Choose the Right Car Rental for Your Trip',
+      message: 'Compact, SUV, or minivan? A quick guide to picking the perfect rental class based on group size, luggage, and terrain.',
+      category: 'Car rental guides',
+      image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=800&q=80',
+      datetime: '2025-06-18T14:30'
+    },
+    {
+      id: 3,
+      title: 'NOVA Expands Fleet with 200 New Electric Vehicles',
+      message: 'We are excited to announce a major expansion of our EV fleet across all major hubs, reducing wait times and our carbon footprint.',
+      category: 'Company news',
+      image: 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=800&q=80',
+      datetime: '2025-07-01T08:00'
+    },
+    {
+      id: 4,
+      title: 'Summer Sale: 20% Off Weekend Rentals',
+      message: 'Book any weekend getaway this summer and save 20% instantly. Offer valid on all vehicle classes through August.',
+      category: 'Promotion news',
+      image: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&q=80',
+      datetime: '2025-07-05T10:00'
+    },
+    {
+      id: 5,
+      title: 'Driving Etiquette: Rules of the Road Abroad',
+      message: 'Renting a car in a new country? Brush up on local driving customs and etiquette before you get behind the wheel.',
+      category: 'Travel tips',
+      image: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80',
+      datetime: '2025-07-09T11:15'
+    },
+    {
+      id: 6,
+      title: 'Understanding Rental Insurance: What You Actually Need',
+      message: 'Not sure whether to add coverage at the counter? We break down what each insurance option actually protects.',
+      category: 'Car rental guides',
+      image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&q=80',
+      datetime: '2025-07-11T16:00'
+    }
+  ];
+  let nextId = Math.max(...posts.map(p => p.id)) + 1;
+
+  const state = { search:'', category:'all', page:1, pageSize:6 };
+
+  function fmtDate(dtStr){
+    const d = new Date(dtStr);
+    if(isNaN(d)) return '—';
+    return d.toLocaleDateString(undefined, { month:'short', day:'numeric', year:'numeric' }) +
+           ' · ' + d.toLocaleTimeString(undefined, { hour:'numeric', minute:'2-digit' });
+  }
+
+  function getFiltered(){
+    return posts.filter(p => {
+      const matchesSearch = !state.search || p.title.toLowerCase().includes(state.search);
+      const matchesCategory = state.category === 'all' || p.category === state.category;
+      return matchesSearch && matchesCategory;
+    }).sort((a,b) => new Date(b.datetime) - new Date(a.datetime));
+  }
+
+  function renderStats(){
+    document.getElementById('statTotal').textContent = posts.length;
+    document.getElementById('statTravel').textContent = posts.filter(p => p.category === 'Travel tips').length;
+    document.getElementById('statRental').textContent = posts.filter(p => p.category === 'Car rental guides').length;
+    document.getElementById('statCompany').textContent = posts.filter(p => p.category === 'Company news' || p.category === 'Promotion news').length;
+  }
+
+  function render(){
+    renderStats();
+    const filtered = getFiltered();
+    const totalPages = Math.max(1, Math.ceil(filtered.length / state.pageSize));
+    state.page = Math.min(state.page, totalPages);
+    const startIdx = (state.page - 1) * state.pageSize;
+    const pageItems = filtered.slice(startIdx, startIdx + state.pageSize);
+
+    const grid = document.getElementById('blogGrid');
+    const noResults = document.getElementById('noResults');
+
+    if(filtered.length === 0){
+      grid.innerHTML = '';
+      grid.classList.add('hidden');
+      noResults.classList.remove('hidden');
+      noResults.classList.add('flex');
+    } else {
+      grid.classList.remove('hidden');
+      noResults.classList.add('hidden');
+      noResults.classList.remove('flex');
+
+      grid.innerHTML = pageItems.map(p => {
+        const cs = categoryStyle[p.category] || { bg:'#F1F4F8', text:'#1F4E79' };
+        return `
+          <div class="post-card card overflow-hidden flex flex-col">
+            <div class="relative h-40 w-full overflow-hidden bg-slate-100">
+              <img src="${p.image}" alt="" class="w-full h-full object-cover" />
+              <span class="cat-pill absolute top-3 left-3" style="background:${cs.bg};color:${cs.text}">${p.category}</span>
+            </div>
+            <div class="p-4 flex flex-col flex-1">
+              <h3 class="font-display font-bold text-[15px] text-[var(--navy)] leading-snug">${escapeHtml(p.title)}</h3>
+              <p class="text-sm text-slate-500 mt-1.5 line-clamp-2">${escapeHtml(p.message)}</p>
+              <div class="mt-auto pt-4 flex items-center justify-between">
+                <span class="text-xs text-slate-400 flex items-center gap-1.5">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                  ${fmtDate(p.datetime)}
+                </span>
+                <button class="text-slate-400 hover:text-[var(--navy)] transition">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    document.getElementById('pageSummary').textContent =
+      filtered.length === 0 ? 'No posts' :
+      `Showing ${startIdx + 1}–${Math.min(startIdx + state.pageSize, filtered.length)} of ${filtered.length} posts`;
+
+    renderPagination(totalPages);
+  }
+
+  function renderPagination(totalPages){
+    const el = document.getElementById('pagination');
+    if(totalPages <= 1){ el.innerHTML = ''; return; }
+    let html = '';
+    html += `<button ${state.page===1?'disabled':''} onclick="goPage(${state.page-1})" class="w-8 h-8 rounded-lg text-sm ${state.page===1?'text-slate-300':'text-slate-500 hover:bg-slate-100'}">‹</button>`;
+    for(let i=1;i<=totalPages;i++){
+      html += `<button onclick="goPage(${i})" class="w-8 h-8 rounded-lg text-sm font-medium ${i===state.page?'bg-[var(--navy)] text-white':'text-slate-500 hover:bg-slate-100'}">${i}</button>`;
+    }
+    html += `<button ${state.page===totalPages?'disabled':''} onclick="goPage(${state.page+1})" class="w-8 h-8 rounded-lg text-sm ${state.page===totalPages?'text-slate-300':'text-slate-500 hover:bg-slate-100'}">›</button>`;
+    el.innerHTML = html;
+  }
+  function goPage(p){ state.page = p; render(); }
+
+  function escapeHtml(str){
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  // ---------- Toast ----------
+  let toastTimer;
+  function showToast(msg){
+    const toast = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    toast.classList.remove('translate-y-4','opacity-0','pointer-events-none');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toast.classList.add('translate-y-4','opacity-0','pointer-events-none');
+    }, 2800);
+  }
+
+  // ---------- Event bindings ----------
+  document.getElementById('searchInput').addEventListener('input', function(){
+    state.search = this.value.trim().toLowerCase();
+    state.page = 1;
+    render();
+  });
+  document.getElementById('categoryFilter').addEventListener('change', function(){
+    state.category = this.value; state.page = 1; render();
+  });
+  document.getElementById('clearFilters').addEventListener('click', function(){
+    state.search = ''; state.category = 'all'; state.page = 1;
+    document.getElementById('searchInput').value = '';
+    document.getElementById('categoryFilter').value = 'all';
+    render();
+  });
+
+  render();
+
+  // ---------- Create Post Modal ----------
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalPanel = document.getElementById('modalPanel');
+  const dropzone = document.getElementById('dropzone');
+  const postImageInput = document.getElementById('postImage');
+  const dropzonePreview = document.getElementById('dropzonePreview');
+  const dropzoneEmpty = document.getElementById('dropzoneEmpty');
+  let uploadedImageData = null;
+
+  function openModal(){
+    modalOverlay.classList.remove('hidden');
+    modalOverlay.classList.add('flex');
+    requestAnimationFrame(() => {
+      modalPanel.classList.remove('scale-95','opacity-0');
+      modalPanel.classList.add('scale-100','opacity-100');
+    });
+    document.body.classList.add('overflow-hidden');
+    setTimeout(() => document.getElementById('postTitle').focus(), 150);
+  }
+
+  function closeModal(){
+    modalPanel.classList.remove('scale-100','opacity-100');
+    modalPanel.classList.add('scale-95','opacity-0');
+    document.body.classList.remove('overflow-hidden');
+    setTimeout(() => {
+      modalOverlay.classList.add('hidden');
+      modalOverlay.classList.remove('flex');
+      resetPostForm();
+    }, 180);
+  }
+
+  function resetPostForm(){
+    document.getElementById('postForm').reset();
+    uploadedImageData = null;
+    dropzonePreview.classList.add('hidden');
+    dropzoneEmpty.classList.remove('hidden');
+    ['postImage','postTitle','postMessage','postDateTime'].forEach(id => {
+      document.getElementById(id + 'Error')?.classList.add('hidden');
+    });
+    dropzone.classList.remove('border-rose-400');
+    document.getElementById('postTitle').classList.remove('border-rose-400');
+    document.getElementById('postMessage').classList.remove('border-rose-400');
+    document.getElementById('postDateTime').classList.remove('border-rose-400');
+    document.getElementById('postCategory').value = 'Travel tips';
+  }
+
+  modalOverlay.addEventListener('click', function(e){
+    if(e.target === modalOverlay) closeModal();
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && !modalOverlay.classList.contains('hidden')) closeModal();
+  });
+
+  // Image upload / preview / drag & drop
+  function handleImageFile(file){
+    if(!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = function(e){
+      uploadedImageData = e.target.result;
+      dropzonePreview.src = uploadedImageData;
+      dropzonePreview.classList.remove('hidden');
+      dropzoneEmpty.classList.add('hidden');
+      dropzone.classList.remove('border-rose-400');
+      document.getElementById('postImageError').classList.add('hidden');
+    };
+    reader.readAsDataURL(file);
+  }
+  postImageInput.addEventListener('change', function(){
+    handleImageFile(this.files[0]);
+  });
+  dropzone.addEventListener('dragover', function(e){
+    e.preventDefault();
+    dropzone.classList.add('drag-over');
+  });
+  dropzone.addEventListener('dragleave', function(){
+    dropzone.classList.remove('drag-over');
+  });
+  dropzone.addEventListener('drop', function(e){
+    e.preventDefault();
+    dropzone.classList.remove('drag-over');
+    handleImageFile(e.dataTransfer.files[0]);
+  });
+
+  // clear field errors as user types
+  ['postTitle','postMessage','postDateTime'].forEach(id => {
+    document.getElementById(id).addEventListener('input', function(){
+      this.classList.remove('border-rose-400');
+      document.getElementById(id + 'Error').classList.add('hidden');
+    });
+  });
+
+  document.getElementById('postForm').addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const titleEl = document.getElementById('postTitle');
+    const messageEl = document.getElementById('postMessage');
+    const dateTimeEl = document.getElementById('postDateTime');
+    let valid = true;
+
+    if(!uploadedImageData){
+      dropzone.classList.add('border-rose-400');
+      document.getElementById('postImageError').classList.remove('hidden');
+      valid = false;
+    }
+    if(titleEl.value.trim().length < 3){
+      titleEl.classList.add('border-rose-400');
+      document.getElementById('postTitleError').classList.remove('hidden');
+      valid = false;
+    }
+    if(messageEl.value.trim().length < 5){
+      messageEl.classList.add('border-rose-400');
+      document.getElementById('postMessageError').classList.remove('hidden');
+      valid = false;
+    }
+    if(!dateTimeEl.value){
+      dateTimeEl.classList.add('border-rose-400');
+      document.getElementById('postDateTimeError').classList.remove('hidden');
+      valid = false;
+    }
+    if(!valid) return;
+
+    const btn = document.getElementById('postSubmitBtn');
+    const text = document.getElementById('postSubmitText');
+    const spinner = document.getElementById('postSubmitSpinner');
+    btn.disabled = true;
+    text.textContent = 'Publishing…';
+    spinner.classList.remove('hidden');
+
+    setTimeout(() => {
+      posts.unshift({
+        id: nextId++,
+        title: titleEl.value.trim(),
+        message: messageEl.value.trim(),
+        category: document.getElementById('postCategory').value,
+        image: uploadedImageData,
+        datetime: dateTimeEl.value
+      });
+
+      btn.disabled = false;
+      text.textContent = 'Publish post';
+      spinner.classList.add('hidden');
+
+      state.page = 1;
+      closeModal();
+      render();
+      showToast(`"${titleEl.value.trim()}" published successfully`);
+    }, 700);
+  });
+</script>
+</body>
+</html>

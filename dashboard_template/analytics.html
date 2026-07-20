@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NOVA Analytics Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --sky:#7ab9ec;
+      --navy:#1F4E79;
+      --paper:#F8F9FA;
+      --grad-a-start:#005AA7;
+      --grad-a-end:#FFFDE4;
+      --grad-b-start:#1c92d2;
+      --grad-b-end:#f2fcfe;
+    }
+    *{font-family:'Manrope',sans-serif;}
+    .font-display{font-family:'Sora',sans-serif;}
+    body{background:var(--paper);}
+    .grad-a{background:linear-gradient(135deg,var(--grad-a-start) 0%,var(--grad-a-end) 100%);}
+    .grad-b{background:linear-gradient(135deg,var(--grad-b-start) 0%,var(--grad-b-end) 100%);}
+    .sidebar-grad{background:linear-gradient(200deg,var(--navy) 0%,#123452 100%);}
+    .scrollbar-thin::-webkit-scrollbar{width:6px;height:6px;}
+    .scrollbar-thin::-webkit-scrollbar-thumb{background:#c9dcee;border-radius:10px;}
+    .card{background:#fff;border:1px solid #E7ECF1;border-radius:18px;}
+    .nav-link{transition:all .18s ease;}
+    .nav-link:hover{background:rgba(122,185,236,0.14);}
+    .nav-link.active{background:rgba(122,185,236,0.22);border-left:3px solid var(--sky);}
+    .dropdown-chevron.rotated{transform:rotate(180deg);}
+    .glow{box-shadow:0 8px 24px -8px rgba(31,78,121,0.25);}
+    ::selection{background:var(--sky);color:#fff;}
+    .stat-pill{border-radius:9999px;padding:.45rem .9rem;font-size:.75rem;font-weight:700;}
+    .chart-line{fill:none;stroke:rgba(31,78,121,0.8);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+    .chart-area{fill:rgba(122,185,236,0.16);}
+    .metric-dot{fill:#fff;stroke:var(--sky);stroke-width:3;}
+    @media (max-width: 1024px){
+      #sidebar{transform:translateX(-100%);}
+      #sidebar.open{transform:translateX(0);}
+    }
+  </style>
+</head>
+<body class="text-[#1F2937]">
+<div class="flex min-h-screen">
+  <aside id="sidebar" class="sidebar-grad fixed lg:static z-40 w-72 min-h-screen text-white flex flex-col transition-transform duration-300 ease-out">
+    <div class="flex items-center gap-3 px-6 py-6 border-b border-white/10">
+      <div class="w-10 h-10 rounded-xl grad-b flex items-center justify-center font-display font-bold text-[var(--navy)] text-lg shadow-lg">N</div>
+      <div>
+        <p class="font-display font-bold text-lg leading-none">NOVA</p>
+        <p class="text-xs text-white/50 mt-1">EV Transport</p>
+      </div>
+      <button onclick="toggleSidebar()" class="ml-auto lg:hidden text-white/70 hover:text-white">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto scrollbar-thin">
+      <p class="text-[11px] uppercase tracking-wider text-white/40 px-3 mb-2 font-semibold">Overview</p>
+      <a href="#" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+        Home
+      </a>
+     
+
+      <a href="analytics.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-4"/></svg>
+        Analytics
+      </a>
+      <a href="notification.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"/></svg>
+        Notification
+      </a>
+
+       <a href="promotion.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v9H4v-9M2 7l10-5 10 5-10 5z"/><path d="M12 22V12"/></svg>
+        Promotion
+      </a>
+      
+      <p class="text-[11px] uppercase tracking-wider text-white/40 px-3 mb-2 mt-6 font-semibold">General</p>
+     
+       <a href="route.html" class="nav-link active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16"/><path d="M5 7l-2 2 2 2"/><path d="M19 13l2 2-2 2"/></svg>
+        Routes
+      </a>
+      <a href="drivers-page.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Drivers
+      </a>
+      <a href="vehicles-page.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7h-9M14 17H5M17 20l3-3-3-3M7 4L4 7l3 3"/></svg>
+        Vehicles
+      </a>
+      <p class="text-[11px] uppercase tracking-wider text-white/40 px-3 mb-2 mt-6 font-semibold">Manage</p>
+      <div>
+        <button type="button" onclick="toggleDropdown('navDropdown2', this)" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 8h18"/><path d="M8 12h8"/><path d="M8 16h8"/></svg>
+          Website
+          <svg class="dropdown-chevron ml-auto transition-transform duration-200" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div id="navDropdown2" class="hidden pl-9 pr-1 mt-1 space-y-1">
+          <a href="vision-mission.html" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Vision & Mission</a>
+          <a href="blog-post-page.html" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Blogs</a>
+          <a href="team.html" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Team</a>
+          <a href="faq.html" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>FAQ</a>
+          <a href="testimonials.html" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Testimonials</a>
+        </div>
+      </div>
+     
+     
+      <p class="text-[11px] uppercase tracking-wider text-white/40 px-3 mb-2 mt-6 font-semibold">System</p>
+      <a href="#" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 .51 1z"/></svg>
+        Settings
+      </a>
+    </nav>
+    <div class="p-4 border-t border-white/10">
+      <div class="flex items-center gap-3 p-3 rounded-xl bg-white/5">
+        <img src="https://i.pravatar.cc/64?img=32" class="w-9 h-9 rounded-full ring-2 ring-[var(--sky)]/50" />
+        <div class="min-w-0">
+          <p class="text-sm font-semibold truncate">Alex Morgan</p>
+          <p class="text-xs text-white/50 truncate">Super Admin</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div id="overlay" onclick="toggleSidebar()" class="hidden fixed inset-0 bg-black/30 z-30 lg:hidden"></div>
+  <div class="flex-1 min-w-0 flex flex-col">
+    <header class="sticky top-0 z-20 bg-white/80 backdrop-blur border-b border-[#E7ECF1] px-4 sm:px-8 py-4 flex items-center gap-4">
+      <button onclick="toggleSidebar()" class="lg:hidden text-[var(--navy)]">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+      <div>
+        <h1 class="font-display font-bold text-xl sm:text-2xl text-[var(--navy)]">Analytics Dashboard</h1>
+        <p class="text-sm text-slate-500 hidden sm:block">Review system, route, and customer engagement performance.</p>
+      </div>
+      <div class="ml-auto flex items-center gap-3">
+        <button class="relative w-10 h-10 rounded-full bg-[#F1F4F8] flex items-center justify-center hover:bg-[#e7edf5] transition">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="absolute top-1.5 right-2 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white"></span>
+        </button>
+        <img src="https://i.pravatar.cc/64?img=32" class="w-9 h-9 rounded-full ring-2 ring-[var(--sky)]/50" />
+        <div class="relative">
+          <button onclick="toggleDropdown('userDropdown', this)" class="flex items-center gap-2 text-sm font-medium text-[var(--navy)] hover:text-[var(--sky)] transition">
+            <span>Ko Thet</span>
+            <svg class="dropdown-chevron transition-transform duration-200" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-2 z-10">
+            <a href="#" class="block px-4 py-2 text-sm text-slate-600 hover:bg-[#F1F4F8]">Profile</a>
+            <a href="#" class="block px-4 py-2 text-sm text-slate-600 hover:bg-[#F1F4F8]">Settings</a>
+            <a href="#" class="block px-4 py-2 text-sm text-slate-600 hover:bg-[#F1F4F8]">Billing</a>
+            <div class="border-t border-slate-100 my-1"></div>
+            <a href="#" class="block px-4 py-2 text-sm text-slate-600 hover:bg-[#F1F4F8]">Sign out</a>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main class="flex-1 px-4 sm:px-8 py-6 max-w-[1400px] w-full mx-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+        <div class="card p-5">
+          <p class="text-xs text-slate-400 font-medium">Monthly Revenue</p>
+          <p class="text-3xl font-display font-bold text-[var(--navy)] mt-3">$128.4K</p>
+          <p class="text-sm text-slate-500 mt-2">Up 12.1% from last month</p>
+        </div>
+        <div class="card p-5">
+          <p class="text-xs text-slate-400 font-medium">Active Drivers</p>
+          <p class="text-3xl font-display font-bold text-[var(--navy)] mt-3">1,042</p>
+          <p class="text-sm text-slate-500 mt-2">+7.8% compared to previous week</p>
+        </div>
+        <div class="card p-5">
+          <p class="text-xs text-slate-400 font-medium">Completed Trips</p>
+          <p class="text-3xl font-display font-bold text-[var(--navy)] mt-3">18.2K</p>
+          <p class="text-sm text-slate-500 mt-2">Average rating 4.9/5</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 xl:grid-cols-[2fr,1fr] gap-4 mb-6">
+        <div class="card p-5">
+          <div class="flex items-center justify-between gap-3 mb-5">
+            <div>
+              <h2 class="font-display font-bold text-xl text-[var(--navy)]">Weekly demand trend</h2>
+              <p class="text-sm text-slate-500 mt-1">Ride request volume across all regions.</p>
+            </div>
+            <span class="stat-pill bg-sky-50 text-sky-700">+18%</span>
+          </div>
+          <div class="overflow-hidden rounded-3xl bg-[#F5F9FD] p-4">
+            <svg viewBox="0 0 760 200" class="w-full h-48" preserveAspectRatio="none">
+              <path class="chart-area" d="M0,160 C120,140 190,120 260,115 C330,110 380,95 450,80 C520,65 560,60 620,50 C680,40 740,46 760,48 L760,200 L0,200 Z" />
+              <path class="chart-line" d="M0,160 C120,140 190,120 260,115 C330,110 380,95 450,80 C520,65 560,60 620,50 C680,40 740,46 760,48" />
+              <circle class="metric-dot" cx="0" cy="160" r="5" />
+              <circle class="metric-dot" cx="190" cy="120" r="5" />
+              <circle class="metric-dot" cx="330" cy="110" r="5" />
+              <circle class="metric-dot" cx="450" cy="80" r="5" />
+              <circle class="metric-dot" cx="620" cy="50" r="5" />
+            </svg>
+          </div>
+        </div>
+        <div class="card p-5">
+          <div class="flex items-center justify-between gap-3 mb-5">
+            <div>
+              <h2 class="font-display font-bold text-xl text-[var(--navy)]">Key metrics</h2>
+              <p class="text-sm text-slate-500 mt-1">Top performing segments.</p>
+            </div>
+            <span class="stat-pill bg-emerald-50 text-emerald-600">Live</span>
+          </div>
+          <div class="space-y-4">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="text-sm text-slate-500">Conversion rate</p>
+                <p class="text-lg font-semibold text-[var(--navy)]">24.6%</p>
+              </div>
+              <span class="stat-pill bg-slate-100 text-slate-700">+4.1%</span>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="text-sm text-slate-500">Average trip value</p>
+                <p class="text-lg font-semibold text-[var(--navy)]">$28.14</p>
+              </div>
+              <span class="stat-pill bg-sky-50 text-sky-700">Stable</span>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="text-sm text-slate-500">Driver acceptance</p>
+                <p class="text-lg font-semibold text-[var(--navy)]">91.2%</p>
+              </div>
+              <span class="stat-pill bg-amber-50 text-amber-700">+1.7%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 mb-6">
+        <div class="card p-5">
+          <h2 class="font-display font-bold text-lg text-[var(--navy)] mb-4">Region performance</h2>
+          <div class="space-y-4">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="font-semibold text-slate-700">North Zone</p>
+                <p class="text-xs text-slate-400">Trips: 5.2K</p>
+              </div>
+              <span class="stat-pill bg-emerald-50 text-emerald-600">+22%</span>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="font-semibold text-slate-700">Central City</p>
+                <p class="text-xs text-slate-400">Trips: 4.1K</p>
+              </div>
+              <span class="stat-pill bg-sky-50 text-sky-700">+9%</span>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="font-semibold text-slate-700">South Corridor</p>
+                <p class="text-xs text-slate-400">Trips: 3.0K</p>
+              </div>
+              <span class="stat-pill bg-rose-50 text-rose-600">-2%</span>
+            </div>
+          </div>
+        </div>
+        <div class="card p-5">
+          <h2 class="font-display font-bold text-lg text-[var(--navy)] mb-4">Customer sentiment</h2>
+          <div class="space-y-4">
+            <div class="rounded-3xl bg-[#F5F9FD] p-4">
+              <p class="text-sm text-slate-500">Average rating</p>
+              <p class="text-3xl font-display font-bold text-[var(--navy)] mt-2">4.9</p>
+              <p class="text-xs text-slate-400 mt-1">Based on 12.8K reviews</p>
+            </div>
+            <div class="grid grid-cols-3 gap-3 text-center">
+              <div class="rounded-3xl bg-white p-4 border border-slate-200">
+                <p class="text-sm text-slate-500">Positive</p>
+                <p class="text-xl font-semibold text-emerald-600 mt-2">82%</p>
+              </div>
+              <div class="rounded-3xl bg-white p-4 border border-slate-200">
+                <p class="text-sm text-slate-500">Neutral</p>
+                <p class="text-xl font-semibold text-slate-700 mt-2">12%</p>
+              </div>
+              <div class="rounded-3xl bg-white p-4 border border-slate-200">
+                <p class="text-sm text-slate-500">Negative</p>
+                <p class="text-xl font-semibold text-rose-600 mt-2">6%</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card p-5">
+          <h2 class="font-display font-bold text-lg text-[var(--navy)] mb-4">Conversion funnel</h2>
+          <div class="space-y-4">
+            <div class="flex items-center justify-between gap-3">
+              <span class="text-sm text-slate-500">Searches</span>
+              <span class="font-semibold text-[var(--navy)]">23.8K</span>
+            </div>
+            <div class="relative h-3 rounded-full bg-[#E9F2FC] overflow-hidden">
+              <div class="absolute inset-y-0 left-0 w-3/4 bg-[var(--sky)]"></div>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <span class="text-sm text-slate-500">Bookings</span>
+              <span class="font-semibold text-[var(--navy)]">14.6K</span>
+            </div>
+            <div class="relative h-3 rounded-full bg-[#E9F2FC] overflow-hidden">
+              <div class="absolute inset-y-0 left-0 w-1/2 bg-emerald-500"></div>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <span class="text-sm text-slate-500">Completed trips</span>
+              <span class="font-semibold text-[var(--navy)]">12.1K</span>
+            </div>
+            <div class="relative h-3 rounded-full bg-[#E9F2FC] overflow-hidden">
+              <div class="absolute inset-y-0 left-0 w-2/5 bg-[#F59E0B]"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<script>
+  function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('hidden'); }
+  function toggleDropdown(id, btn){ const panel=document.getElementById(id); const chevron=btn.querySelector('.dropdown-chevron'); panel.classList.toggle('hidden'); chevron.classList.toggle('rotated'); }
+</script>
+</body>
+</html>
