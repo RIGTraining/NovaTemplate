@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NOVA · Vehicles</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ===== CORE ===== */
+  :root {
+    --sky: #7ab9ec;
+    --navy: #1F4E79;
+    --paper: #F8F9FA;
+    --grad-a-start: #005AA7;
+    --grad-a-end: #FFFDE4;
+    --grad-b-start: #1c92d2;
+    --grad-b-end: #f2fcfe;
+  }
+  * { font-family: 'Manrope', sans-serif; }
+  .font-display { font-family: 'Sora', sans-serif; }
+  body { background: var(--paper); }
+
+  /* ===== GRADIENTS ===== */
+  .grad-a { background: linear-gradient(135deg, var(--grad-a-start) 0%, var(--grad-a-end) 100%); }
+  .grad-b { background: linear-gradient(135deg, var(--grad-b-start) 0%, var(--grad-b-end) 100%); }
+  .sidebar-grad { background: linear-gradient(200deg, var(--navy) 0%, #123452 100%); }
+
+  /* ===== SCROLLBAR ===== */
+  .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: #c9dcee; border-radius: 10px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+
+  /* ===== CARDS & INTERACTIONS ===== */
+  .card {
+    background: #fff;
+    border: 1px solid #E7ECF1;
+    border-radius: 18px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+  }
+  .nav-link {
+    transition: all .18s ease;
+    border-left: 3px solid transparent;
+  }
+  .nav-link:hover { background: rgba(122,185,236,0.14); }
+  .nav-link.active {
+    background: rgba(122,185,236,0.22);
+    border-left: 3px solid var(--sky);
+  }
+  .dropdown-chevron.rotated { transform: rotate(180deg); }
+  .glow { box-shadow: 0 8px 24px -8px rgba(31,78,121,0.25); }
+  ::selection { background: var(--sky); color: #fff; }
+
+  /* ===== TOAST ===== */
+  .toast {
+    transition: transform .3s ease, opacity .3s ease;
+  }
+
+  /* ===== TABLE SORTING ===== */
+  th.sortable { cursor: pointer; user-select: none; }
+  th.sortable:hover { color: var(--navy); }
+  .sort-icon { opacity: .3; transition: opacity .15s, transform .15s; }
+  th.sort-asc .sort-icon { opacity: 1; transform: rotate(0deg); }
+  th.sort-desc .sort-icon { opacity: 1; transform: rotate(180deg); }
+  tr.row-selected { background: rgba(122,185,236,0.10); }
+  .checkbox { accent-color: var(--navy); }
+
+  /* ===== BULK BAR ===== */
+  #bulkBar { transition: transform .25s ease, opacity .25s ease; }
+
+  /* ===== INPUTS ===== */
+  .input-field { transition: all .18s ease; }
+  .input-field:focus {
+    border-color: var(--sky);
+    box-shadow: 0 0 0 4px rgba(122,185,236,0.25);
+    outline: none;
+  }
+
+  /* ===== DROPZONE ===== */
+  .dropzone { transition: all .18s ease; }
+  .dropzone.drag-over { border-color: var(--sky); background: rgba(122,185,236,0.10); }
+
+  /* ===== RESPONSIVE SIDEBAR ===== */
+  @media (max-width: 1024px) {
+    #sidebar { transform: translateX(-100%); }
+    #sidebar.open { transform: translateX(0); }
+  }
+
+  /* ===== MODAL ANIMATION ===== */
+  #modalPanel, #viewModalPanel, #editModalPanel {
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  #modalPanel.scale-100, #viewModalPanel.scale-100, #editModalPanel.scale-100 {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  /* ===== VIEW MODAL ===== */
+  .view-detail-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .view-detail-value {
+    font-size: 15px;
+    font-weight: 500;
+    color: #1F2937;
+  }
+
+  /* ===== MISC ===== */
+  .bg-soft-sky { background: rgba(122,185,236,0.08); }
+  .border-soft-sky { border-color: rgba(122,185,236,0.25); }
+  textarea.resize-none { resize: none; }
+</style>
+</head>
+<body class="text-[#1F2937]">
+
+<div class="flex min-h-screen">
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside id="sidebar" class="sidebar-grad fixed lg:static z-40 w-72 min-h-screen text-white flex flex-col transition-transform duration-300 ease-out">
+    <div class="flex items-center gap-3 px-6 py-6 border-b border-white/10">
+      <div class="w-10 h-10 rounded-xl grad-b flex items-center justify-center font-display font-bold text-[var(--navy)] text-lg shadow-lg">N</div>
+      <div>
+        <p class="font-display font-bold text-lg leading-none">NOVA</p>
+        <p class="text-xs text-white/50 mt-1">EV Transport</p>
+      </div>
+      <button onclick="toggleSidebar()" class="ml-auto lg:hidden text-white/70 hover:text-white">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto scrollbar-thin">
+      <p class="text-[11px] uppercase tracking-wider text-white/40 px-3 mb-2 font-semibold">Overview</p>
+      <a href="index.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+        Home
+      </a>
+      <a href="analytics.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-4"/></svg>
+        Analytics
+      </a>
+      <a href="notification.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"/></svg>
+        Notification
+      </a>
+      <a href="promotion.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v9H4v-9M2 7l10-5 10 5-10 5z"/><path d="M12 22V12"/></svg>
+        Promotion
+      </a>
+      <p class="text-[11px] uppercase tracking-wider text-white/40 px-3 mb-2 mt-6 font-semibold">General</p>
+      <a href="route.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16"/><path d="M5 7l-2 2 2 2"/><path d="M19 13l2 2-2 2"/></svg>
+        Routes
+      </a>
+      <a href="drivers-page.html" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Drivers
+      </a>
+      <a href="vehicles-page.html" class="nav-link active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7h-9M14 17H5M17 20l3-3-3-3M7 4L4 7l3 3"/></svg>
+        Vehicles
+      </a>
+      <p class="text-[11px] uppercase tracking-wider text-white/40 px-3 mb-2 mt-6 font-semibold">Manage</p>
+      <div>
+        <button type="button" onclick="toggleDropdown('navDropdown2', this)" class="nav-link w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 8h18"/><path d="M8 12h8"/><path d="M8 16h8"/></svg>
+          Website
+          <svg class="dropdown-chevron ml-auto transition-transform duration-200" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div id="navDropdown2" class="hidden pl-9 pr-1 mt-1 space-y-1">
+          <a href="vision-mission.html" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Vision & Mission</a>
+          <a href="blog-post-page.html" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Blogs</a>
+          <a href="subscriptions.html" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Subscriptions</a>
+          <a href="faq.html" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>FAQ</a>
+          <a href="testimonials.html" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-white/70"><span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>Testimonials</a>
+        </div>
+      </div>
+      <p class="text-[11px] uppercase tracking-wider text-white/40 px-3 mb-2 mt-6 font-semibold">System</p>
+      <a href="#" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/80">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 .51 1z"/></svg>
+        Settings
+      </a>
+    </nav>
+    <div class="p-4 border-t border-white/10">
+      <div class="flex items-center gap-3 p-3 rounded-xl bg-white/5">
+        <img src="https://i.pravatar.cc/64?img=32" class="w-9 h-9 rounded-full ring-2 ring-[var(--sky)]/50" />
+        <div class="min-w-0">
+          <p class="text-sm font-semibold truncate">Alex Morgan</p>
+          <p class="text-xs text-white/50 truncate">Super Admin</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div id="overlay" onclick="toggleSidebar()" class="hidden fixed inset-0 bg-black/30 z-30 lg:hidden"></div>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <div class="flex-1 min-w-0 flex flex-col">
+
+    <!-- TOPBAR -->
+    <header class="sticky top-0 z-20 bg-white/80 backdrop-blur border-b border-[#E7ECF1] px-4 sm:px-8 py-4 flex items-center gap-4">
+      <button onclick="toggleSidebar()" class="lg:hidden text-[var(--navy)]">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+      <div>
+        <h1 class="font-display font-bold text-xl sm:text-2xl text-[var(--navy)]">Vehicles</h1>
+        <p class="text-sm text-slate-500 hidden sm:block">Manage every vehicle in your rental fleet.</p>
+      </div>
+      <div class="ml-auto flex items-center gap-3">
+        <button class="relative w-10 h-10 rounded-full bg-[#F1F4F8] flex items-center justify-center hover:bg-[#e7edf5] transition">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="absolute top-1.5 right-2 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white"></span>
+        </button>
+        <img src="https://i.pravatar.cc/64?img=32" class="w-9 h-9 rounded-full ring-2 ring-[var(--sky)]/50" />
+        <div class="relative">
+          <button onclick="toggleDropdown('userDropdown', this)" class="flex items-center gap-2 text-sm font-medium text-[var(--navy)] hover:text-[var(--sky)] transition">
+            <span>Ko Thet</span>
+            <svg class="dropdown-chevron transition-transform duration-200" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-2 z-10">
+            <a href="#" class="block px-4 py-2 text-sm text-slate-600 hover:bg-[#F1F4F8]">Profile</a>
+            <a href="#" class="block px-4 py-2 text-sm text-slate-600 hover:bg-[#F1F4F8]">Settings</a>
+            <a href="#" class="block px-4 py-2 text-sm text-slate-600 hover:bg-[#F1F4F8]">Billing</a>
+            <div class="border-t border-slate-100 my-1"></div>
+            <a href="#" class="block px-4 py-2 text-sm text-slate-600 hover:bg-[#F1F4F8]">Sign out</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 px-4 sm:px-8 py-6 max-w-[1400px] w-full mx-auto">
+
+      <!-- STATS -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+        <div class="card p-4"><p class="text-xs text-slate-400 font-medium">Total Vehicles</p><p class="text-xl font-display font-bold text-[var(--navy)] mt-1" id="statTotal">—</p></div>
+        <div class="card p-4"><p class="text-xs text-slate-400 font-medium">Electric</p><p class="text-xl font-display font-bold text-emerald-600 mt-1" id="statElectric">—</p></div>
+        <div class="card p-4"><p class="text-xs text-slate-400 font-medium">Automatic</p><p class="text-xl font-display font-bold text-sky-600 mt-1" id="statAuto">—</p></div>
+        <div class="card p-4"><p class="text-xs text-slate-400 font-medium">Avg. Rental Price</p><p class="text-xl font-display font-bold text-amber-600 mt-1" id="statAvgPrice">—</p></div>
+      </div>
+
+      <!-- TABLE CARD -->
+      <div class="card overflow-hidden">
+
+        <!-- TOOLBAR -->
+        <div class="p-4 sm:p-5 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center gap-3">
+          <div class="relative flex-1 max-w-sm">
+            <svg class="absolute left-3.5 top-1/2 -translate-y-1/2" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input id="searchInput" placeholder="Search by owner, brand, model…" class="w-full bg-[#F1F4F8] rounded-lg pl-10 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[var(--sky)] placeholder:text-slate-400" />
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <select id="fuelFilter" class="text-sm border border-slate-200 rounded-lg px-3 py-2.5 outline-none text-slate-600 bg-white">
+              <option value="all">All fuel types</option>
+              <option value="Petrol">Petrol</option>
+              <option value="Diesel">Diesel</option>
+              <option value="Electric">Electric</option>
+              <option value="Hybrid">Hybrid</option>
+            </select>
+            <select id="transmissionFilter" class="text-sm border border-slate-200 rounded-lg px-3 py-2.5 outline-none text-slate-600 bg-white">
+              <option value="all">All transmissions</option>
+              <option value="Automatic">Automatic</option>
+              <option value="Manual">Manual</option>
+            </select>
+            <button id="clearFilters" class="text-sm font-medium text-slate-400 hover:text-[var(--navy)] px-2">Clear</button>
+          </div>
+          <div class="lg:ml-auto flex items-center gap-2">
+            <button onclick="exportCSV()" class="flex items-center gap-2 border border-slate-200 text-slate-600 text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-slate-50 transition">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+              Export
+            </button>
+            <button onclick="openModal()" class="flex items-center gap-2 grad-a text-white text-sm font-semibold px-4 py-2.5 rounded-lg glow hover:opacity-90 transition">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              Add vehicle
+            </button>
+          </div>
+        </div>
+
+        <!-- BULK BAR -->
+        <div id="bulkBar" class="hidden items-center gap-4 px-5 py-3 bg-[#EAF3FC] border-b border-[#D6E7F7] text-sm">
+          <span class="font-semibold text-[var(--navy)]"><span id="selectedCount">0</span> selected</span>
+          <button onclick="deleteBulk()" class="text-rose-500 hover:text-rose-600 font-medium flex items-center gap-1.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg>
+            Delete
+          </button>
+          <button onclick="clearSelection()" class="ml-auto text-slate-400 hover:text-slate-600">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <!-- TABLE -->
+        <div class="overflow-x-auto scrollbar-thin">
+          <table class="w-full text-sm min-w-[920px]">
+            <thead>
+              <tr class="text-left text-slate-400 border-b border-slate-100 bg-[#FBFCFD]">
+                <th class="py-3 pl-5 pr-2 w-10"><input type="checkbox" id="selectAll" class="checkbox w-4 h-4 rounded" /></th>
+                <th class="sortable font-medium py-3 pr-4" data-key="model"><span class="inline-flex items-center gap-1">Car <svg class="sort-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span></th>
+                <th class="sortable font-medium py-3 pr-4" data-key="owner"><span class="inline-flex items-center gap-1">Owner <svg class="sort-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span></th>
+                <th class="sortable font-medium py-3 pr-4" data-key="seats"><span class="inline-flex items-center gap-1">Seats <svg class="sort-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span></th>
+                <th class="sortable font-medium py-3 pr-4" data-key="fuel"><span class="inline-flex items-center gap-1">Fuel type <svg class="sort-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span></th>
+                <th class="sortable font-medium py-3 pr-4" data-key="transmission"><span class="inline-flex items-center gap-1">Transmission <svg class="sort-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span></th>
+                <th class="sortable font-medium py-3 pr-4" data-key="price"><span class="inline-flex items-center gap-1">Rental price <svg class="sort-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span></th>
+                <th class="font-medium py-3 pr-5 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+
+        <!-- NO RESULTS -->
+        <div id="noResults" class="hidden flex-col items-center justify-center py-16 text-center">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" class="mb-3"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <p class="font-semibold text-slate-500">No vehicles match your filters</p>
+          <p class="text-sm text-slate-400 mt-1">Try a different search term or clear filters.</p>
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="flex flex-col sm:flex-row items-center gap-3 justify-between px-5 py-4 border-t border-slate-100">
+          <div class="flex items-center gap-2 text-sm text-slate-500"><span id="pageSummary">—</span><select id="pageSize" class="ml-2 border border-slate-200 rounded-lg px-2 py-1 text-sm outline-none bg-white"><option value="8">8 / page</option><option value="10" selected>10 / page</option><option value="20">20 / page</option><option value="50">50 / page</option></select></div>
+          <div id="pagination" class="flex items-center gap-1"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ===== ADD VEHICLE MODAL ===== -->
+<div id="modalOverlay" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+  <div id="modalPanel" class="bg-white rounded-2xl w-full max-w-lg shadow-2xl">
+    <div class="flex items-start justify-between px-6 pt-6 pb-4 border-b border-slate-100">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl grad-a flex items-center justify-center shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M20 7h-9M14 17H5M17 20l3-3-3-3M7 4L4 7l3 3"/></svg></div>
+        <div><h3 class="font-display font-bold text-lg text-[var(--navy)]">Add vehicle</h3><p class="text-sm text-slate-500">Register a new car to your fleet.</p></div>
+      </div>
+      <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 p-1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+
+    <form id="vehicleForm" novalidate>
+      <div class="px-6 py-5 space-y-4 max-h-[70vh] overflow-y-auto scrollbar-thin">
+        <!-- Car photo upload -->
+        <div>
+          <label class="text-sm font-medium text-slate-600">Car photo</label>
+          <div id="dropzone" class="dropzone mt-1.5 border-2 border-dashed border-slate-200 rounded-xl relative overflow-hidden cursor-pointer">
+            <input id="carPhoto" type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" />
+            <div id="dropzoneEmpty" class="flex flex-col items-center justify-center gap-2 py-8 text-center px-4">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              <p class="text-sm text-slate-500"><span class="font-semibold text-[var(--navy)]">Click to upload</span> or drag and drop</p>
+              <p class="text-xs text-slate-400">PNG or JPG, up to 5MB</p>
+            </div>
+            <img id="dropzonePreview" class="hidden w-full h-44 object-cover" />
+          </div>
+          <p id="carPhotoError" class="hidden text-xs text-rose-500 mt-1.5">Add a photo of this vehicle.</p>
+        </div>
+
+        <!-- Owner photo upload -->
+        <div>
+          <label class="text-sm font-medium text-slate-600">Owner photo</label>
+          <div id="dropzoneOwner" class="dropzone mt-1.5 border-2 border-dashed border-slate-200 rounded-xl relative overflow-hidden cursor-pointer">
+            <input id="ownerPhoto" type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" />
+            <div id="dropzoneOwnerEmpty" class="flex flex-col items-center justify-center gap-2 py-8 text-center px-4">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              <p class="text-sm text-slate-500"><span class="font-semibold text-[var(--navy)]">Click to upload</span> or drag and drop</p>
+              <p class="text-xs text-slate-400">PNG or JPG, up to 5MB</p>
+            </div>
+            <img id="dropzoneOwnerPreview" class="hidden w-full h-44 object-cover" />
+          </div>
+          <p id="ownerPhotoError" class="hidden text-xs text-rose-500 mt-1.5">Add a photo of the owner.</p>
+        </div>
+
+        <div>
+          <label for="vehOwner" class="text-sm font-medium text-slate-600">Owner name</label>
+          <input id="vehOwner" type="text" placeholder="Jane Doe" class="input-field mt-1.5 w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm outline-none" />
+          <p id="vehOwnerError" class="hidden text-xs text-rose-500 mt-1.5">Enter the vehicle owner's name.</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="vehBrand" class="text-sm font-medium text-slate-600">Brand</label>
+            <input id="vehBrand" type="text" placeholder="Toyota" class="input-field mt-1.5 w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm outline-none" />
+            <p id="vehBrandError" class="hidden text-xs text-rose-500 mt-1.5">Enter the car's brand.</p>
+          </div>
+          <div>
+            <label for="vehModel" class="text-sm font-medium text-slate-600">Model</label>
+            <input id="vehModel" type="text" placeholder="Camry" class="input-field mt-1.5 w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm outline-none" />
+            <p id="vehModelError" class="hidden text-xs text-rose-500 mt-1.5">Enter the car's model.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="vehSeats" class="text-sm font-medium text-slate-600">Seat capacity</label>
+            <input id="vehSeats" type="number" min="1" max="16" placeholder="5" class="input-field mt-1.5 w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm outline-none" />
+            <p id="vehSeatsError" class="hidden text-xs text-rose-500 mt-1.5">Enter number of seats.</p>
+          </div>
+          <div>
+            <label for="vehPrice" class="text-sm font-medium text-slate-600">Rental price ($/day)</label>
+            <input id="vehPrice" type="number" min="0" step="0.01" placeholder="45.00" class="input-field mt-1.5 w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm outline-none" />
+            <p id="vehPriceError" class="hidden text-xs text-rose-500 mt-1.5">Enter a rental price.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="vehFuel" class="text-sm font-medium text-slate-600">Fuel type</label>
+            <select id="vehFuel" class="input-field mt-1.5 w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm outline-none bg-white">
+              <option value="Petrol">Petrol</option>
+              <option value="Diesel">Diesel</option>
+              <option value="Electric">Electric</option>
+              <option value="Hybrid">Hybrid</option>
+            </select>
+          </div>
+          <div>
+            <label for="vehTransmission" class="text-sm font-medium text-slate-600">Transmission</label>
+            <select id="vehTransmission" class="input-field mt-1.5 w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm outline-none bg-white">
+              <option value="Automatic">Automatic</option>
+              <option value="Manual">Manual</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 px-6 py-4 border-t border-slate-100 bg-[#FBFCFD] rounded-b-2xl">
+        <button type="button" onclick="closeModal()" class="flex-1 border border-slate-200 text-slate-600 text-sm font-semibold py-2.5 rounded-xl hover:bg-slate-50 transition">Cancel</button>
+        <button type="submit" id="vehSubmitBtn" class="flex-1 grad-a text-white text-sm font-semibold py-2.5 rounded-xl glow hover:opacity-90 transition flex items-center justify-center gap-2"><span id="vehSubmitText">Add vehicle</span><svg id="vehSubmitSpinner" class="hidden animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="9" opacity="0.25"/><path d="M21 12a9 9 0 0 0-9-9"/></svg></button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== VIEW VEHICLE MODAL ===== -->
+<div id="viewModalOverlay" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+  <div id="viewModalPanel" class="bg-white rounded-2xl w-full max-w-md shadow-2xl">
+    <div class="flex items-start justify-between px-6 pt-6 pb-4 border-b border-slate-100">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl grad-a flex items-center justify-center shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+        <div><h3 class="font-display font-bold text-lg text-[var(--navy)]">Vehicle Details</h3><p class="text-sm text-slate-500">View vehicle information.</p></div>
+      </div>
+      <button onclick="closeViewModal()" class="text-slate-400 hover:text-slate-600 p-1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="px-6 py-5 space-y-4 max-h-[70vh] overflow-y-auto scrollbar-thin">
+      <div class="flex items-center gap-4 pb-4 border-b border-slate-100">
+        <img id="viewVehiclePhoto" src="" class="w-24 h-20 rounded-xl object-cover border-2 border-slate-200" />
+        <div>
+          <p id="viewVehicleName" class="font-display font-bold text-xl text-[var(--navy)]">—</p>
+          <p id="viewVehicleId" class="text-xs text-slate-400 mt-0.5">ID #—</p>
+        </div>
+      </div>
+      <div>
+        <p class="view-detail-label">Owner</p>
+        <div class="flex items-center gap-3 mt-1">
+          <img id="viewOwnerPhoto" src="" class="w-10 h-10 rounded-full object-cover border border-slate-200" />
+          <p id="viewVehicleOwner" class="view-detail-value">—</p>
+        </div>
+      </div>
+      <div>
+        <p class="view-detail-label">Seats</p>
+        <p id="viewVehicleSeats" class="view-detail-value">—</p>
+      </div>
+      <div>
+        <p class="view-detail-label">Fuel Type</p>
+        <p id="viewVehicleFuel" class="view-detail-value">—</p>
+      </div>
+      <div>
+        <p class="view-detail-label">Transmission</p>
+        <p id="viewVehicleTransmission" class="view-detail-value">—</p>
+      </div>
+      <div>
+        <p class="view-detail-label">Rental Price</p>
+        <p id="viewVehiclePrice" class="view-detail-value">—</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-3 px-6 py-4 border-t border-slate-100 bg-[#FBFCFD] rounded-b-2xl">
+      <button onclick="closeViewModal()" class="flex-1 border border-slate-200 text-slate-600 text-sm font-semibold py-2.5 rounded-xl hover:bg-slate-50 transition">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== EDIT VEHICLE MODAL ===== -->
+<div id="editModalOverlay" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+  <div id="editModalPanel" class="bg-white rounded-2xl w-full max-w-lg shadow-2xl">
+    <div class="flex items-start justify-between px-6 pt-6 pb-4 border-b border-slate-100">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl grad-a flex items-center justify-center shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></div>
+        <div><h3 class="font-display font-bold text-lg text-[var(--navy)]">Edit Vehicle</h3><p class="text-sm text-slate-500">Update vehicle information.</p></div>
+      </div>
+      <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600 p-1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+
+    <form id="editVehicleForm" novalidate>
+      <input type="hidden" id="editVehicleId" value="" />
+      <div class="px-6 py-5 space-y-4 max-h-[70vh] overflow-y-auto scrollbar-thin">
+        <!-- Car photo upload -->
+        <div>
+          <label class="text-sm font-medium text-slate-600">Car photo</label>
+          <div id="editDropzone" class="dropzone mt-1.5 border-2 border-dashed border-slate-200 rounded-xl relative overflow-hidden cursor-pointer">
+            <input id="editCarPhoto" type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" />
+            <div id="editDropzoneEmpty" class="flex flex-col items-center justify-center gap-2 py-8 text-center px-4">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              <p class="text-sm text-slate-500"><span class="font-semibold text-[var(--navy)]">Click to upload</span> or drag and drop</p>
+              <p class="text-xs text-slate-400">PNG or JPG, up to 5MB</p>
+            </div>
+            <img id="editDropzonePreview" class="hidden w-full h-44 object-cover" />
+          </div>
+          <p id="editCarPhotoError" class="hidden text-xs text-rose-500 mt-1.5">Add a photo of this vehicle.</p>
+        </div>
+
+        <!-- Owner photo upload -->
+        <div>
+          <label class="text-sm font-medium text-slate-600">Owner photo</label>
+          <div id="editDropzoneOwner" class="dropzone mt-1.5 border-2 border-dashed border-slate-200 rounded-xl relative overflow-hidden cursor-pointer">
+            <input id="editOwnerPhoto" type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" />
+            <div id="editDropzoneOwnerEmpty" class="flex flex-col items-center justify-center gap-2 py-8 text-center px-4">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              <p class="text-sm text-slate-500"><span class="font-semibold text-[var(--navy)]">Click to upload</span> or drag and drop</p>
+              <p class="text-xs text-slate-400">PNG or JPG, up to 5MB</p>
+            </div>
+            <img id="editDropzoneOwnerPreview" class="hidden w-full h-44 object-cover" />
+          </div>
+          <p id="editOwnerPhotoError" class="hidden text-xs text-rose-500 mt-1.5">Add a photo of the owner.</p>
+        </div>
+
+        <div>
+          <label for="editVehOwner" class="text-sm font-medium text-slate-600">Owner name</label>
+          <input id="editVehOwner" type="text" placeholder="Jane Doe" class="input-field mt-1.5 w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm outline-none" />
+          <p id="editVehOwnerError" class="hidden text-xs text-rose-500 mt-1.5">Enter the vehicle owner's name.</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="editVehBrand" class="text-sm font-medium text-slate-600">Brand</label>
+            <input id="editVehBrand" type="text" placeholder="Toyota" class="input-field mt-1.5 w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm outline-none" />
+            <p id="editVehBrandError" class="hidden text-xs text-rose-500 mt-1.5">Enter the car's brand.</p>
+          </div>
+          <div>
+            <label for="editVehModel" class="text-sm font-medium text-slate-600">Model</label>
+            <input id="editVehModel" type="text" placeholder="Camry" class="input-field mt-1.5 w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm outline-none" />
+            <p id="editVehModelError" class="hidden text-xs text-rose-500 mt-1.5">Enter the car's model.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="editVehSeats" class="text-sm font-medium text-slate-600">Seat capacity</label>
+            <input id="editVehSeats" type="number" min="1" max="16" placeholder="5" class="input-field mt-1.5 w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm outline-none" />
+            <p id="editVehSeatsError" class="hidden text-xs text-rose-500 mt-1.5">Enter number of seats.</p>
+          </div>
+          <div>
+            <label for="editVehPrice" class="text-sm font-medium text-slate-600">Rental price ($/day)</label>
+            <input id="editVehPrice" type="number" min="0" step="0.01" placeholder="45.00" class="input-field mt-1.5 w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm outline-none" />
+            <p id="editVehPriceError" class="hidden text-xs text-rose-500 mt-1.5">Enter a rental price.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="editVehFuel" class="text-sm font-medium text-slate-600">Fuel type</label>
+            <select id="editVehFuel" class="input-field mt-1.5 w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm outline-none bg-white">
+              <option value="Petrol">Petrol</option>
+              <option value="Diesel">Diesel</option>
+              <option value="Electric">Electric</option>
+              <option value="Hybrid">Hybrid</option>
+            </select>
+          </div>
+          <div>
+            <label for="editVehTransmission" class="text-sm font-medium text-slate-600">Transmission</label>
+            <select id="editVehTransmission" class="input-field mt-1.5 w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm outline-none bg-white">
+              <option value="Automatic">Automatic</option>
+              <option value="Manual">Manual</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 px-6 py-4 border-t border-slate-100 bg-[#FBFCFD] rounded-b-2xl">
+        <button type="button" onclick="closeEditModal()" class="flex-1 border border-slate-200 text-slate-600 text-sm font-semibold py-2.5 rounded-xl hover:bg-slate-50 transition">Cancel</button>
+        <button type="submit" id="editVehSubmitBtn" class="flex-1 grad-a text-white text-sm font-semibold py-2.5 rounded-xl glow hover:opacity-90 transition flex items-center justify-center gap-2"><span id="editVehSubmitText">Save changes</span><svg id="editVehSubmitSpinner" class="hidden animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="9" opacity="0.25"/><path d="M21 12a9 9 0 0 0-9-9"/></svg></button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div id="toast" class="toast fixed bottom-6 right-6 translate-y-24 opacity-0 bg-[var(--navy)] text-white text-sm font-medium px-5 py-3 rounded-xl shadow-xl z-50 flex items-center gap-2">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--sky)" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+  <span id="toastMsg">Done</span>
+</div>
+
+<script>
+  // ===== SIDEBAR =====
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('hidden');
+  }
+
+  function toggleDropdown(id, btn) {
+    const panel = document.getElementById(id);
+    const chevron = btn.querySelector('.dropdown-chevron');
+    panel.classList.toggle('hidden');
+    chevron.classList.toggle('rotated');
+  }
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.relative')) {
+      document.getElementById('userDropdown')?.classList.add('hidden');
+    }
+  });
+
+  // ===== TOAST =====
+  let toastTimer;
+
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg || 'Done';
+    toast.classList.remove('translate-y-24', 'opacity-0');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.add('translate-y-24', 'opacity-0'), 2400);
+  }
+
+  // ===== SAMPLE DATA =====
+  const owners = ['Maria Chen', 'Daniel Osei', 'Priya Nair', 'Tom Whitfield', 'Sofia Lindqvist', 'James Park', 'Elena Ivanova', 'Kwame Mensah', 'Yuki Tanaka', 'Liam O\'Brien', 'Fatima Al-Sayed', 'Noah Rossi', 'Aiko Kobayashi', 'Carlos Fernandez'];
+  const carPhotos = [
+    'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&q=80',
+    'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=400&q=80',
+    'https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=400&q=80',
+    'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400&q=80',
+    'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=400&q=80',
+    'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=400&q=80',
+    'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?w=400&q=80',
+    'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=400&q=80'
+  ];
+  const brandModels = [
+    ['Toyota', 'Camry'], ['Honda', 'Civic'], ['Tesla', 'Model 3'], ['Ford', 'Explorer'],
+    ['BMW', '3 Series'], ['Hyundai', 'Tucson'], ['Kia', 'Sportage'], ['Nissan', 'Altima'],
+    ['Chevrolet', 'Malibu'], ['Volkswagen', 'Tiguan'], ['Mazda', 'CX-5'], ['Audi', 'A4'],
+    ['Tesla', 'Model Y'], ['Jeep', 'Wrangler']
+  ];
+  const fuelTypes = ['Petrol', 'Diesel', 'Electric', 'Hybrid'];
+  const transmissions = ['Automatic', 'Manual'];
+
+  function seededRandom(seed) { let x = Math.sin(seed) * 10000; return x - Math.floor(x); }
+
+  let vehicles = Array.from({ length: 32 }, (_, i) => {
+    const [brand, model] = brandModels[i % brandModels.length];
+    const r1 = seededRandom(i + 1);
+    const r2 = seededRandom(i + 51);
+    const r3 = seededRandom(i + 103);
+    const fuel = brand === 'Tesla' ? 'Electric' : fuelTypes[Math.floor(r1 * fuelTypes.length)];
+    return {
+      id: i + 1,
+      owner: owners[i % owners.length],
+      ownerPhoto: `https://i.pravatar.cc/64?img=${(i % 70) + 1}`,
+      brand, model,
+      photo: carPhotos[i % carPhotos.length],
+      seats: [2, 4, 5, 5, 5, 7][Math.floor(r2 * 6)],
+      fuel,
+      transmission: transmissions[Math.floor(r3 * 2)],
+      price: Math.round((28 + r1 * 92) * 100) / 100
+    };
+  });
+  let nextId = Math.max(...vehicles.map(v => v.id)) + 1;
+
+  // ===== STATE =====
+  let state = {
+    search: '',
+    fuel: 'all',
+    transmission: 'all',
+    sortKey: 'model',
+    sortDir: 'asc',
+    page: 1,
+    pageSize: 10,
+    selected: new Set()
+  };
+
+  const fuelStyle = {
+    Petrol: 'bg-slate-100 text-slate-600',
+    Diesel: 'bg-amber-50 text-amber-600',
+    Electric: 'bg-emerald-50 text-emerald-600',
+    Hybrid: 'bg-[#E9F2FC] text-[var(--navy)]'
+  };
+  const transmissionStyle = {
+    Automatic: 'bg-[#E9F2FC] text-[var(--navy)]',
+    Manual: 'bg-slate-100 text-slate-600'
+  };
+
+  function getFiltered() {
+    return vehicles.filter(v => {
+      const q = state.search;
+      const matchesSearch = q === '' ||
+        v.owner.toLowerCase().includes(q) ||
+        v.brand.toLowerCase().includes(q) ||
+        v.model.toLowerCase().includes(q);
+      const matchesFuel = state.fuel === 'all' || v.fuel === state.fuel;
+      const matchesTransmission = state.transmission === 'all' || v.transmission === state.transmission;
+      return matchesSearch && matchesFuel && matchesTransmission;
+    });
+  }
+
+  function getSorted(list) {
+    const dir = state.sortDir === 'asc' ? 1 : -1;
+    return [...list].sort((a, b) => {
+      let av, bv;
+      if (state.sortKey === 'model') { av = a.brand + ' ' + a.model;
+        bv = b.brand + ' ' + b.model; } else { av = a[state.sortKey];
+        bv = b[state.sortKey]; }
+      if (typeof av === 'string') { av = av.toLowerCase();
+        bv = bv.toLowerCase(); }
+      if (av < bv) return -1 * dir;
+      if (av > bv) return 1 * dir;
+      return 0;
+    });
+  }
+
+  function formatMoney(n) {
+    return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '/day';
+  }
+
+  function escapeHtml(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  // ===== VIEW VEHICLE =====
+  function viewVehicle(id) {
+    const v = vehicles.find(veh => veh.id === id);
+    if (!v) return;
+    
+    document.getElementById('viewVehiclePhoto').src = v.photo;
+    document.getElementById('viewVehicleName').textContent = `${v.brand} ${v.model}`;
+    document.getElementById('viewVehicleId').textContent = `ID #${String(v.id).padStart(4, '0')}`;
+    document.getElementById('viewOwnerPhoto').src = v.ownerPhoto || 'https://i.pravatar.cc/64?img=1';
+    document.getElementById('viewVehicleOwner').textContent = v.owner;
+    document.getElementById('viewVehicleSeats').textContent = `${v.seats} seats`;
+    document.getElementById('viewVehicleFuel').textContent = v.fuel;
+    document.getElementById('viewVehicleTransmission').textContent = v.transmission;
+    document.getElementById('viewVehiclePrice').textContent = formatMoney(v.price);
+    
+    const overlay = document.getElementById('viewModalOverlay');
+    const panel = document.getElementById('viewModalPanel');
+    overlay.classList.remove('hidden');
+    overlay.classList.add('flex');
+    requestAnimationFrame(() => {
+      panel.classList.remove('scale-95', 'opacity-0');
+      panel.classList.add('scale-100', 'opacity-100');
+    });
+    document.body.classList.add('overflow-hidden');
+  }
+
+  function closeViewModal() {
+    const overlay = document.getElementById('viewModalOverlay');
+    const panel = document.getElementById('viewModalPanel');
+    panel.classList.remove('scale-100', 'opacity-100');
+    panel.classList.add('scale-95', 'opacity-0');
+    document.body.classList.remove('overflow-hidden');
+    setTimeout(() => {
+      overlay.classList.add('hidden');
+      overlay.classList.remove('flex');
+    }, 180);
+  }
+
+  document.getElementById('viewModalOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeViewModal();
+  });
+
+  // ===== EDIT VEHICLE =====
+  let editUploadedPhotoData = null;
+  let editUploadedOwnerPhotoData = null;
+
+  function editVehicle(id) {
+    const v = vehicles.find(veh => veh.id === id);
+    if (!v) return;
+    
+    document.getElementById('editVehicleId').value = v.id;
+    document.getElementById('editVehOwner').value = v.owner;
+    document.getElementById('editVehBrand').value = v.brand;
+    document.getElementById('editVehModel').value = v.model;
+    document.getElementById('editVehSeats').value = v.seats;
+    document.getElementById('editVehPrice').value = v.price;
+    document.getElementById('editVehFuel').value = v.fuel;
+    document.getElementById('editVehTransmission').value = v.transmission;
+    
+    editUploadedPhotoData = null;
+    editUploadedOwnerPhotoData = null;
+    
+    // Car photo
+    const preview = document.getElementById('editDropzonePreview');
+    const empty = document.getElementById('editDropzoneEmpty');
+    if (v.photo) {
+      preview.src = v.photo;
+      preview.classList.remove('hidden');
+      empty.classList.add('hidden');
+    } else {
+      preview.classList.add('hidden');
+      empty.classList.remove('hidden');
+    }
+    
+    // Owner photo
+    const ownerPreview = document.getElementById('editDropzoneOwnerPreview');
+    const ownerEmpty = document.getElementById('editDropzoneOwnerEmpty');
+    if (v.ownerPhoto) {
+      ownerPreview.src = v.ownerPhoto;
+      ownerPreview.classList.remove('hidden');
+      ownerEmpty.classList.add('hidden');
+    } else {
+      ownerPreview.classList.add('hidden');
+      ownerEmpty.classList.remove('hidden');
+    }
+    
+    const overlay = document.getElementById('editModalOverlay');
+    const panel = document.getElementById('editModalPanel');
+    overlay.classList.remove('hidden');
+    overlay.classList.add('flex');
+    requestAnimationFrame(() => {
+      panel.classList.remove('scale-95', 'opacity-0');
+      panel.classList.add('scale-100', 'opacity-100');
+    });
+    document.body.classList.add('overflow-hidden');
+    setTimeout(() => document.getElementById('editVehOwner').focus(), 150);
+  }
+
+  function closeEditModal() {
+    const overlay = document.getElementById('editModalOverlay');
+    const panel = document.getElementById('editModalPanel');
+    panel.classList.remove('scale-100', 'opacity-100');
+    panel.classList.add('scale-95', 'opacity-0');
+    document.body.classList.remove('overflow-hidden');
+    setTimeout(() => {
+      overlay.classList.add('hidden');
+      overlay.classList.remove('flex');
+    }, 180);
+  }
+
+  document.getElementById('editModalOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeEditModal();
+  });
+
+  // Edit car photo dropzone
+  const editDropzone = document.getElementById('editDropzone');
+  const editCarPhotoInput = document.getElementById('editCarPhoto');
+  const editDropzonePreview = document.getElementById('editDropzonePreview');
+  const editDropzoneEmpty = document.getElementById('editDropzoneEmpty');
+
+  editCarPhotoInput.addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      editUploadedPhotoData = e.target.result;
+      editDropzonePreview.src = e.target.result;
+      editDropzonePreview.classList.remove('hidden');
+      editDropzoneEmpty.classList.add('hidden');
+      document.getElementById('editCarPhotoError').classList.add('hidden');
+    };
+    reader.readAsDataURL(file);
+  });
+  editDropzone.addEventListener('dragover', function(e) { e.preventDefault(); this.classList.add('drag-over'); });
+  editDropzone.addEventListener('dragleave', function() { this.classList.remove('drag-over'); });
+  editDropzone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    this.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      editUploadedPhotoData = ev.target.result;
+      editDropzonePreview.src = ev.target.result;
+      editDropzonePreview.classList.remove('hidden');
+      editDropzoneEmpty.classList.add('hidden');
+      document.getElementById('editCarPhotoError').classList.add('hidden');
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // Edit owner photo dropzone
+  const editDropzoneOwner = document.getElementById('editDropzoneOwner');
+  const editOwnerPhotoInput = document.getElementById('editOwnerPhoto');
+  const editDropzoneOwnerPreview = document.getElementById('editDropzoneOwnerPreview');
+  const editDropzoneOwnerEmpty = document.getElementById('editDropzoneOwnerEmpty');
+
+  editOwnerPhotoInput.addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      editUploadedOwnerPhotoData = e.target.result;
+      editDropzoneOwnerPreview.src = e.target.result;
+      editDropzoneOwnerPreview.classList.remove('hidden');
+      editDropzoneOwnerEmpty.classList.add('hidden');
+      document.getElementById('editOwnerPhotoError').classList.add('hidden');
+    };
+    reader.readAsDataURL(file);
+  });
+  editDropzoneOwner.addEventListener('dragover', function(e) { e.preventDefault(); this.classList.add('drag-over'); });
+  editDropzoneOwner.addEventListener('dragleave', function() { this.classList.remove('drag-over'); });
+  editDropzoneOwner.addEventListener('drop', function(e) {
+    e.preventDefault();
+    this.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      editUploadedOwnerPhotoData = ev.target.result;
+      editDropzoneOwnerPreview.src = ev.target.result;
+      editDropzoneOwnerPreview.classList.remove('hidden');
+      editDropzoneOwnerEmpty.classList.add('hidden');
+      document.getElementById('editOwnerPhotoError').classList.add('hidden');
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // Edit form submit
+  document.getElementById('editVehicleForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const id = Number(document.getElementById('editVehicleId').value);
+    const ownerEl = document.getElementById('editVehOwner');
+    const brandEl = document.getElementById('editVehBrand');
+    const modelEl = document.getElementById('editVehModel');
+    const seatsEl = document.getElementById('editVehSeats');
+    const priceEl = document.getElementById('editVehPrice');
+    let valid = true;
+    
+    if (ownerEl.value.trim().length < 2) {
+      ownerEl.classList.add('border-rose-400');
+      document.getElementById('editVehOwnerError').classList.remove('hidden');
+      valid = false;
+    }
+    if (brandEl.value.trim().length < 1) {
+      brandEl.classList.add('border-rose-400');
+      document.getElementById('editVehBrandError').classList.remove('hidden');
+      valid = false;
+    }
+    if (modelEl.value.trim().length < 1) {
+      modelEl.classList.add('border-rose-400');
+      document.getElementById('editVehModelError').classList.remove('hidden');
+      valid = false;
+    }
+    const seatsVal = parseInt(seatsEl.value, 10);
+    if (isNaN(seatsVal) || seatsVal < 1) {
+      seatsEl.classList.add('border-rose-400');
+      document.getElementById('editVehSeatsError').classList.remove('hidden');
+      valid = false;
+    }
+    const priceVal = parseFloat(priceEl.value);
+    if (isNaN(priceVal) || priceVal < 0) {
+      priceEl.classList.add('border-rose-400');
+      document.getElementById('editVehPriceError').classList.remove('hidden');
+      valid = false;
+    }
+    if (!valid) return;
+    
+    const idx = vehicles.findIndex(v => v.id === id);
+    if (idx === -1) return;
+    
+    vehicles[idx].owner = ownerEl.value.trim();
+    vehicles[idx].brand = brandEl.value.trim();
+    vehicles[idx].model = modelEl.value.trim();
+    vehicles[idx].seats = seatsVal;
+    vehicles[idx].price = Math.round(priceVal * 100) / 100;
+    vehicles[idx].fuel = document.getElementById('editVehFuel').value;
+    vehicles[idx].transmission = document.getElementById('editVehTransmission').value;
+    
+    if (editUploadedPhotoData) {
+      vehicles[idx].photo = editUploadedPhotoData;
+    }
+    if (editUploadedOwnerPhotoData) {
+      vehicles[idx].ownerPhoto = editUploadedOwnerPhotoData;
+    }
+    
+    closeEditModal();
+    render();
+    showToast('Vehicle updated successfully');
+  });
+
+  // ===== RENDER =====
+  function render() {
+    const filtered = getSorted(getFiltered());
+    const total = filtered.length;
+    const pageCount = Math.max(1, Math.ceil(total / state.pageSize));
+    state.page = Math.min(state.page, pageCount);
+    const startIdx = (state.page - 1) * state.pageSize;
+    const pageItems = filtered.slice(startIdx, startIdx + state.pageSize);
+
+    // stats
+    document.getElementById('statTotal').textContent = vehicles.length;
+    document.getElementById('statElectric').textContent = vehicles.filter(v => v.fuel === 'Electric').length;
+    document.getElementById('statAuto').textContent = vehicles.filter(v => v.transmission === 'Automatic').length;
+    const avgPrice = vehicles.length ? vehicles.reduce((s, v) => s + v.price, 0) / vehicles.length : 0;
+    document.getElementById('statAvgPrice').textContent = '$' + avgPrice.toFixed(2);
+
+    // rows
+    const tbody = document.getElementById('tableBody');
+    const noResults = document.getElementById('noResults');
+    if (pageItems.length === 0) {
+      tbody.innerHTML = '';
+      noResults.classList.remove('hidden');
+      noResults.classList.add('flex');
+    } else {
+      noResults.classList.add('hidden');
+      noResults.classList.remove('flex');
+      tbody.innerHTML = pageItems.map(v => `
+        <tr class="border-b border-slate-50 last:border-0 hover:bg-[#F8FAFD] transition ${state.selected.has(v.id) ? 'row-selected' : ''}">
+          <td class="py-3 pl-5 pr-2"><input type="checkbox" class="checkbox row-check w-4 h-4 rounded" data-id="${v.id}" ${state.selected.has(v.id) ? 'checked' : ''} /></td>
+          <td class="py-3 pr-4">
+            <div class="flex items-center gap-2.5">
+              <img src="${v.photo}" class="w-12 h-9 rounded-lg object-cover" />
+              <div class="min-w-0">
+                <p class="font-medium text-slate-700 truncate">${escapeHtml(v.brand)} ${escapeHtml(v.model)}</p>
+                <p class="text-xs text-slate-400 truncate">ID #${String(v.id).padStart(4,'0')}</p>
+              </div>
+            </div>
+          </td>
+          <td class="py-3 pr-4">
+            <div class="flex items-center gap-2">
+              <img src="${v.ownerPhoto || 'https://i.pravatar.cc/64?img=1'}" class="w-7 h-7 rounded-full object-cover" />
+              <span class="text-slate-600">${escapeHtml(v.owner)}</span>
+            </div>
+          </td>
+          <td class="py-3 pr-4 text-slate-500">${v.seats} seats</td>
+          <td class="py-3 pr-4"><span class="text-xs font-semibold px-2.5 py-1 rounded-full ${fuelStyle[v.fuel]}">${v.fuel}</span></td>
+          <td class="py-3 pr-4"><span class="text-xs font-semibold px-2.5 py-1 rounded-full ${transmissionStyle[v.transmission]}">${v.transmission}</span></td>
+          <td class="py-3 pr-4 font-semibold text-slate-700">${formatMoney(v.price)}</td>
+          <td class="py-3 pr-5 text-right">
+            <div class="inline-flex items-center gap-1">
+              <button onclick="viewVehicle(${v.id})" class="p-1.5 rounded-lg text-slate-400 hover:text-[var(--navy)] hover:bg-slate-100" title="View">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+              <button onclick="editVehicle(${v.id})" class="p-1.5 rounded-lg text-slate-400 hover:text-[var(--navy)] hover:bg-slate-100" title="Edit">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
+              </button>
+              <button onclick="deleteOne(${v.id})" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50" title="Delete">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // sort indicators
+    document.querySelectorAll('th.sortable').forEach(th => {
+      th.classList.remove('sort-asc', 'sort-desc');
+      if (th.dataset.key === state.sortKey) {
+        th.classList.add(state.sortDir === 'asc' ? 'sort-asc' : 'sort-desc');
+      }
+    });
+
+    // select all
+    const selectAll = document.getElementById('selectAll');
+    const pageIds = pageItems.map(v => v.id);
+    selectAll.checked = pageIds.length > 0 && pageIds.every(id => state.selected.has(id));
+    selectAll.indeterminate = !selectAll.checked && pageIds.some(id => state.selected.has(id));
+
+    document.getElementById('pageSummary').textContent = total === 0 ? 'No results' : `Showing ${startIdx + 1}–${Math.min(startIdx + state.pageSize, total)} of ${total}`;
+
+    // pagination
+    const pagination = document.getElementById('pagination');
+    let btns = '';
+    btns += `<button onclick="goPage(${state.page - 1})" ${state.page === 1 ? 'disabled' : ''} class="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium border border-slate-200 text-slate-500 disabled:opacity-40 hover:bg-slate-50">‹</button>`;
+    const pagesToShow = new Set([1, pageCount, state.page, state.page - 1, state.page + 1]);
+    let lastPrinted = 0;
+    for (let p = 1; p <= pageCount; p++) {
+      if (pagesToShow.has(p)) {
+        if (p - lastPrinted > 1) btns += `<span class="px-1 text-slate-300">…</span>`;
+        btns += `<button onclick="goPage(${p})" class="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium ${p === state.page ? 'bg-[var(--navy)] text-white' : 'border border-slate-200 text-slate-500 hover:bg-slate-50'}">${p}</button>`;
+        lastPrinted = p;
+      }
+    }
+    btns += `<button onclick="goPage(${state.page + 1})" ${state.page === pageCount ? 'disabled' : ''} class="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium border border-slate-200 text-slate-500 disabled:opacity-40 hover:bg-slate-50">›</button>`;
+    pagination.innerHTML = btns;
+
+    // bulk bar
+    const bulkBar = document.getElementById('bulkBar');
+    if (state.selected.size > 0) {
+      bulkBar.classList.remove('hidden');
+      bulkBar.classList.add('flex');
+      document.getElementById('selectedCount').textContent = state.selected.size;
+    } else {
+      bulkBar.classList.add('hidden');
+      bulkBar.classList.remove('flex');
+    }
+
+    // row checkbox listeners
+    document.querySelectorAll('.row-check').forEach(cb => {
+      cb.addEventListener('change', function() {
+        const id = Number(this.dataset.id);
+        if (this.checked) state.selected.add(id);
+        else state.selected.delete(id);
+        render();
+      });
+    });
+  }
+
+  // ===== ACTIONS =====
+  function goPage(p) {
+    const filtered = getFiltered();
+    const pageCount = Math.max(1, Math.ceil(filtered.length / state.pageSize));
+    if (p < 1 || p > pageCount) return;
+    state.page = p;
+    render();
+  }
+
+  function deleteOne(id) {
+    if (!confirm('Are you sure you want to delete this vehicle?')) return;
+    const idx = vehicles.findIndex(v => v.id === id);
+    if (idx !== -1) { vehicles.splice(idx, 1);
+      state.selected.delete(id);
+      showToast('Vehicle deleted');
+      render(); }
+  }
+
+  function deleteBulk() {
+    if (!confirm(`Are you sure you want to delete ${state.selected.size} vehicle(s)?`)) return;
+    state.selected.forEach(id => {
+      const idx = vehicles.findIndex(v => v.id === id);
+      if (idx !== -1) vehicles.splice(idx, 1);
+    });
+    showToast(`${state.selected.size} vehicle(s) deleted`);
+    state.selected.clear();
+    render();
+  }
+
+  function clearSelection() { state.selected.clear();
+    render(); }
+
+  function exportCSV() {
+    const rows = getSorted(getFiltered());
+    const header = ['Owner', 'Brand', 'Model', 'Seats', 'Fuel type', 'Transmission', 'Rental price'];
+    const csv = [header.join(',')].concat(
+      rows.map(v => [v.owner, v.brand, v.model, v.seats, v.fuel, v.transmission, v.price].map(x => `"${x}"`).join(','))
+    ).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'vehicles.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Exported vehicles.csv');
+  }
+
+  // ===== EVENT BINDINGS =====
+  document.getElementById('searchInput').addEventListener('input', function() {
+    state.search = this.value.trim().toLowerCase();
+    state.page = 1;
+    render();
+  });
+  document.getElementById('fuelFilter').addEventListener('change', function() {
+    state.fuel = this.value;
+    state.page = 1;
+    render();
+  });
+  document.getElementById('transmissionFilter').addEventListener('change', function() {
+    state.transmission = this.value;
+    state.page = 1;
+    render();
+  });
+  document.getElementById('clearFilters').addEventListener('click', function() {
+    state.search = '';
+    state.fuel = 'all';
+    state.transmission = 'all';
+    state.page = 1;
+    document.getElementById('searchInput').value = '';
+    document.getElementById('fuelFilter').value = 'all';
+    document.getElementById('transmissionFilter').value = 'all';
+    render();
+  });
+  document.getElementById('pageSize').addEventListener('change', function() {
+    state.pageSize = Number(this.value);
+    state.page = 1;
+    render();
+  });
+  document.querySelectorAll('th.sortable').forEach(th => {
+    th.addEventListener('click', function() {
+      const key = this.dataset.key;
+      if (state.sortKey === key) { state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc'; } else { state.sortKey = key;
+        state.sortDir = 'asc'; }
+      render();
+    });
+  });
+  document.getElementById('selectAll').addEventListener('change', function() {
+    const filtered = getSorted(getFiltered());
+    const startIdx = (state.page - 1) * state.pageSize;
+    const pageIds = filtered.slice(startIdx, startIdx + state.pageSize).map(v => v.id);
+    if (this.checked) pageIds.forEach(id => state.selected.add(id));
+    else pageIds.forEach(id => state.selected.delete(id));
+    render();
+  });
+
+  render();
+
+  // ===== ADD MODAL =====
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalPanel = document.getElementById('modalPanel');
+  const dropzone = document.getElementById('dropzone');
+  const carPhotoInput = document.getElementById('carPhoto');
+  const dropzonePreview = document.getElementById('dropzonePreview');
+  const dropzoneEmpty = document.getElementById('dropzoneEmpty');
+  let uploadedPhotoData = null;
+
+  // Owner photo
+  const dropzoneOwner = document.getElementById('dropzoneOwner');
+  const ownerPhotoInput = document.getElementById('ownerPhoto');
+  const dropzoneOwnerPreview = document.getElementById('dropzoneOwnerPreview');
+  const dropzoneOwnerEmpty = document.getElementById('dropzoneOwnerEmpty');
+  let uploadedOwnerPhotoData = null;
+
+  function openModal() {
+    modalOverlay.classList.remove('hidden');
+    modalOverlay.classList.add('flex');
+    requestAnimationFrame(() => {
+      modalPanel.classList.remove('scale-95', 'opacity-0');
+      modalPanel.classList.add('scale-100', 'opacity-100');
+    });
+    document.body.classList.add('overflow-hidden');
+    setTimeout(() => document.getElementById('vehOwner').focus(), 150);
+  }
+
+  function closeModal() {
+    modalPanel.classList.remove('scale-100', 'opacity-100');
+    modalPanel.classList.add('scale-95', 'opacity-0');
+    document.body.classList.remove('overflow-hidden');
+    setTimeout(() => {
+      modalOverlay.classList.add('hidden');
+      modalOverlay.classList.remove('flex');
+      resetVehicleForm();
+    }, 180);
+  }
+
+  function resetVehicleForm() {
+    document.getElementById('vehicleForm').reset();
+    uploadedPhotoData = null;
+    uploadedOwnerPhotoData = null;
+    dropzonePreview.classList.add('hidden');
+    dropzoneEmpty.classList.remove('hidden');
+    dropzoneOwnerPreview.classList.add('hidden');
+    dropzoneOwnerEmpty.classList.remove('hidden');
+    ['carPhoto', 'ownerPhoto', 'vehOwner', 'vehBrand', 'vehModel', 'vehSeats', 'vehPrice'].forEach(id => {
+      document.getElementById(id + 'Error')?.classList.add('hidden');
+    });
+    dropzone.classList.remove('border-rose-400');
+    dropzoneOwner.classList.remove('border-rose-400');
+    ['vehOwner', 'vehBrand', 'vehModel', 'vehSeats', 'vehPrice'].forEach(id => {
+      document.getElementById(id).classList.remove('border-rose-400');
+    });
+    document.getElementById('vehFuel').value = 'Petrol';
+    document.getElementById('vehTransmission').value = 'Automatic';
+  }
+
+  modalOverlay.addEventListener('click', function(e) {
+    if (e.target === modalOverlay) closeModal();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && !modalOverlay.classList.contains('hidden')) closeModal();
+  });
+
+  // Image upload / preview / drag & drop for car photo
+  function handleImageFile(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      uploadedPhotoData = e.target.result;
+      dropzonePreview.src = uploadedPhotoData;
+      dropzonePreview.classList.remove('hidden');
+      dropzoneEmpty.classList.add('hidden');
+      dropzone.classList.remove('border-rose-400');
+      document.getElementById('carPhotoError').classList.add('hidden');
+    };
+    reader.readAsDataURL(file);
+  }
+  carPhotoInput.addEventListener('change', function() {
+    handleImageFile(this.files[0]);
+  });
+  dropzone.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    dropzone.classList.add('drag-over');
+  });
+  dropzone.addEventListener('dragleave', function() {
+    dropzone.classList.remove('drag-over');
+  });
+  dropzone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    dropzone.classList.remove('drag-over');
+    handleImageFile(e.dataTransfer.files[0]);
+  });
+
+  // Image upload / preview / drag & drop for owner photo
+  function handleOwnerImageFile(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      uploadedOwnerPhotoData = e.target.result;
+      dropzoneOwnerPreview.src = uploadedOwnerPhotoData;
+      dropzoneOwnerPreview.classList.remove('hidden');
+      dropzoneOwnerEmpty.classList.add('hidden');
+      dropzoneOwner.classList.remove('border-rose-400');
+      document.getElementById('ownerPhotoError').classList.add('hidden');
+    };
+    reader.readAsDataURL(file);
+  }
+  ownerPhotoInput.addEventListener('change', function() {
+    handleOwnerImageFile(this.files[0]);
+  });
+  dropzoneOwner.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    dropzoneOwner.classList.add('drag-over');
+  });
+  dropzoneOwner.addEventListener('dragleave', function() {
+    dropzoneOwner.classList.remove('drag-over');
+  });
+  dropzoneOwner.addEventListener('drop', function(e) {
+    e.preventDefault();
+    dropzoneOwner.classList.remove('drag-over');
+    handleOwnerImageFile(e.dataTransfer.files[0]);
+  });
+
+  // clear field errors as user types
+  ['vehOwner', 'vehBrand', 'vehModel', 'vehSeats', 'vehPrice'].forEach(id => {
+    document.getElementById(id).addEventListener('input', function() {
+      this.classList.remove('border-rose-400');
+      document.getElementById(id + 'Error').classList.add('hidden');
+    });
+  });
+
+  // ===== FORM SUBMIT =====
+  document.getElementById('vehicleForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const ownerEl = document.getElementById('vehOwner');
+    const brandEl = document.getElementById('vehBrand');
+    const modelEl = document.getElementById('vehModel');
+    const seatsEl = document.getElementById('vehSeats');
+    const priceEl = document.getElementById('vehPrice');
+    let valid = true;
+
+    if (!uploadedPhotoData) {
+      dropzone.classList.add('border-rose-400');
+      document.getElementById('carPhotoError').classList.remove('hidden');
+      valid = false;
+    }
+    if (!uploadedOwnerPhotoData) {
+      dropzoneOwner.classList.add('border-rose-400');
+      document.getElementById('ownerPhotoError').classList.remove('hidden');
+      valid = false;
+    }
+    if (ownerEl.value.trim().length < 2) {
+      ownerEl.classList.add('border-rose-400');
+      document.getElementById('vehOwnerError').classList.remove('hidden');
+      valid = false;
+    }
+    if (brandEl.value.trim().length < 1) {
+      brandEl.classList.add('border-rose-400');
+      document.getElementById('vehBrandError').classList.remove('hidden');
+      valid = false;
+    }
+    if (modelEl.value.trim().length < 1) {
+      modelEl.classList.add('border-rose-400');
+      document.getElementById('vehModelError').classList.remove('hidden');
+      valid = false;
+    }
+    const seatsVal = parseInt(seatsEl.value, 10);
+    if (isNaN(seatsVal) || seatsVal < 1) {
+      seatsEl.classList.add('border-rose-400');
+      document.getElementById('vehSeatsError').classList.remove('hidden');
+      valid = false;
+    }
+    const priceVal = parseFloat(priceEl.value);
+    if (isNaN(priceVal) || priceVal < 0) {
+      priceEl.classList.add('border-rose-400');
+      document.getElementById('vehPriceError').classList.remove('hidden');
+      valid = false;
+    }
+    if (!valid) return;
+
+    const btn = document.getElementById('vehSubmitBtn');
+    const text = document.getElementById('vehSubmitText');
+    const spinner = document.getElementById('vehSubmitSpinner');
+    btn.disabled = true;
+    text.textContent = 'Adding…';
+    spinner.classList.remove('hidden');
+
+    setTimeout(() => {
+      vehicles.unshift({
+        id: nextId++,
+        owner: ownerEl.value.trim(),
+        ownerPhoto: uploadedOwnerPhotoData,
+        brand: brandEl.value.trim(),
+        model: modelEl.value.trim(),
+        photo: uploadedPhotoData,
+        seats: seatsVal,
+        fuel: document.getElementById('vehFuel').value,
+        transmission: document.getElementById('vehTransmission').value,
+        price: Math.round(priceVal * 100) / 100
+      });
+
+      btn.disabled = false;
+      text.textContent = 'Add vehicle';
+      spinner.classList.add('hidden');
+
+      state.page = 1;
+      closeModal();
+      render();
+      showToast(`${brandEl.value.trim()} ${modelEl.value.trim()} added successfully`);
+    }, 700);
+  });
+</script>
+</body>
+</html>
